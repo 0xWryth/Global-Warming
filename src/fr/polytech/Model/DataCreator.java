@@ -1,5 +1,7 @@
 package fr.polytech.Model;
 
+import javafx.util.Pair;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,6 +22,9 @@ public class DataCreator {
             Integer minYear = null;
             HashMap<Integer, YearData> data = new HashMap<>();
 
+            Double minDif = null;
+            Double maxDif = null;
+
             Boolean firstLine = true;
             while ( line != null) {
                 String[] array = line.split(",");
@@ -39,7 +44,23 @@ public class DataCreator {
 
                     int year = minYear;
                     for (int i = 2; i < array.length; i++) {
-                        Double posTemp = array[i].equals("NA") ? null : Double.parseDouble(array[i]);
+                        Double posTemp = array[i].equals("NA") ? Double.NaN : Double.parseDouble(array[i]);
+
+                        if (!posTemp.isNaN()) {
+                            if (minDif == null || maxDif == null) {
+                                maxDif = posTemp;
+                                minDif = posTemp;
+                            }
+
+                            if (posTemp > maxDif) {
+                                maxDif = posTemp;
+                            }
+
+                            if (posTemp < minDif) {
+                                minDif = posTemp;
+                            }
+                        }
+
                         var d = data.get(year);
                         d.put(earthPosition, posTemp);
                         year++;
@@ -52,7 +73,7 @@ public class DataCreator {
             bufRead.close();
             file.close();
 
-            return new AppData(data);
+            return new AppData(data, minDif, maxDif);
         } catch (IOException e) {
             e.printStackTrace();
         }

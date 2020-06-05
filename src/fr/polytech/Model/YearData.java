@@ -1,33 +1,24 @@
 package fr.polytech.Model;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public class YearData {
-    private HashMap<EarthPosition, Double> data;
-
-    Double minTemp = null;
-    Double maxTemp = null;
+    private LinkedHashMap<EarthPosition, Double> data;
 
     public YearData() {
-        data = new HashMap<>();
+        data = new LinkedHashMap<>();
     }
 
     public void put(EarthPosition earthPosition, Double tempValue) {
         data.put(earthPosition, tempValue);
+    }
 
-        if (tempValue != null) {
-            if (maxTemp == null || minTemp == null) {
-                minTemp = tempValue;
-                maxTemp = tempValue;
-            }
+    public Double getAnomalyFromArea(EarthPosition earthPosition) {
+        return data.get(earthPosition);
+    }
 
-            if (tempValue > maxTemp) {
-                maxTemp = tempValue;
-            }
-
-            if (tempValue < minTemp) {
-                minTemp = tempValue;
-            }
-        }
+    public HashMap<EarthPosition, Double> getAnomalies() {
+        return data;
     }
 }
