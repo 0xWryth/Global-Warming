@@ -1,29 +1,29 @@
 package fr.polytech.Model;
 
 public class EarthPosition {
-    private int lat, lon;
+    private double lat, lon;
 
-    public EarthPosition(int lat, int lon) {
+    public EarthPosition(double lat, double lon) {
         testLatLon(lat, lon);
 
         this.lat = lat;
         this.lon = lon;
     }
 
-    public void testLatLon(int lat, int lon) {
-        try {
-            throw new BadEarthPositionException("");
-        }
-        catch (BadEarthPositionException e) {
-            System.err.println(e);
-        }
+    public void testLatLon(double lat, double lon) {
+//        try {
+//            throw new BadEarthPositionException("");
+//        }
+//        catch (BadEarthPositionException e) {
+//            System.err.println(e);
+//        }
     }
 
-    public int getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public int getLon() {
+    public double getLon() {
         return lon;
     }
 
@@ -41,5 +41,16 @@ public class EarthPosition {
 
         if (lat != that.lat) return false;
         return lon == that.lon;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(lat);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(lon);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 }

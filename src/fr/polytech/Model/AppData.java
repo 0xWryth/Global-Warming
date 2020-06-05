@@ -2,22 +2,17 @@ package fr.polytech.Model;
 
 import javafx.util.Pair;
 
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
 public class AppData {
-    private HashMap<Integer, HashMap<EarthPosition, Integer>> data;
+    private HashMap<Integer, YearData> data;
     private HashMap<EarthPosition, Integer> normalTemperature;
 
-    public AppData() {
-        data = new HashMap<>();
-        normalTemperature = new HashMap<>();
-        loadData();
-    }
-
-    private void loadData() {
-        var d = FileReader.readFile("Test");
+    public AppData(HashMap<Integer, YearData> data) {
+        this.data = data;
     }
 
     public ArrayList<Integer> getYearsList() {
