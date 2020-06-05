@@ -10,9 +10,9 @@ import javafx.scene.transform.Rotate;
 public class CameraManager {
 
     private static final double CAMERA_MIN_DISTANCE = -0.5;
-    private static final double CAMERA_INITIAL_DISTANCE = -5;
-    private static final double CAMERA_INITIAL_X_ANGLE = 0.0;
-    private static final double CAMERA_INITIAL_Y_ANGLE = 0.0;
+    private static final double CAMERA_INITIAL_DISTANCE = -6.5;
+    private static final double CAMERA_INITIAL_X_ANGLE = -38.0;
+    private static final double CAMERA_INITIAL_Y_ANGLE = 172.0;
     private static final double CAMERA_NEAR_CLIP = 0.1;
     private static final double CAMERA_FAR_CLIP = 10000.0;
     private static final double CONTROL_MULTIPLIER = 0.1;
@@ -34,6 +34,16 @@ public class CameraManager {
     private double mouseDeltaY;
 
     private Camera camera;
+
+    public void resetCamera() {
+        cameraXform2.setTranslateX(0.0);
+        cameraXform2.setTranslateY(0.0);
+
+        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
+
+        ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+        rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+    }
 
     public CameraManager(Camera cam, Node mainRoot, Group root) {
 
@@ -93,9 +103,6 @@ public class CameraManager {
                 if (me.isPrimaryButtonDown()) {
                     ry.setAngle(ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED);
                     rx.setAngle(rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED);
-                } else if (me.isSecondaryButtonDown()) {
-                    cameraXform2.setTranslateX(cameraXform2.getTranslateX() - mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
-                    cameraXform2.setTranslateY(cameraXform2.getTranslateY() - mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
                 }
             }
         });
@@ -124,13 +131,7 @@ public class CameraManager {
             public void handle(KeyEvent event) {
                 switch (event.getCode()) {
                     case ALT:
-                        cameraXform2.setTranslateX(0.0);
-                        cameraXform2.setTranslateY(0.0);
-
-                        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-
-                        ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-                        rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+                        resetCamera();
                         break;
                     default:
 

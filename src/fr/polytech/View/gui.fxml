@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
@@ -13,10 +14,19 @@
 
 <HBox fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="1060.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.polytech.Controller.Controller">
    <children>
-      <VBox fx:id="leftPane" prefHeight="740.0" prefWidth="760.0">
+      <VBox fx:id="leftPane" prefHeight="740.0" prefWidth="685.0">
          <children>
-            <Pane fx:id="earthPane" prefHeight="675.0" prefWidth="398.0" />
-            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="67.0" prefWidth="757.0">
+            <Pane>
+               <children>
+                  <Pane id="earthPane" fx:id="earthPane" prefHeight="670.0" prefWidth="685.0" stylesheets="@EarthPane.css" />
+                  <Button fx:id="resetCameraBtn" layoutX="630.0" layoutY="635.0" mnemonicParsing="false" onAction="#resetCamera" stylesheets="@Button.css" text="Reset">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
+               </children>
+            </Pane>
+            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="70.0" prefWidth="685.0">
                <children>
                   <Button fx:id="switchBtn" mnemonicParsing="false" prefHeight="36.0" prefWidth="76.0" stylesheets="@Button.css" text="Switch" textAlignment="CENTER">
                      <opaqueInsets>
@@ -62,9 +72,9 @@
             </HBox>
          </children>
       </VBox>
-      <VBox prefHeight="740.0" prefWidth="452.0" style="-fx-border-color: transparent transparent transparent rgb(96, 94, 92, 0.2);">
+      <VBox prefHeight="740.0" prefWidth="375.0" style="-fx-border-color: transparent transparent transparent rgb(96, 94, 92, 0.2);">
          <children>
-            <Pane prefHeight="60.0" prefWidth="200.0" style="-fx-background-color: rgb(0, 120, 212);">
+            <Pane prefHeight="60.0" prefWidth="375.0" style="-fx-background-color: rgb(0, 120, 212);">
                <children>
                   <Label layoutX="21.0" layoutY="21.0" text="Propriété" textFill="WHITE">
                      <font>
@@ -73,7 +83,7 @@
                   </Label>
                </children>
             </Pane>
-            <Pane prefHeight="683.0" prefWidth="374.0">
+            <Pane prefHeight="683.0" prefWidth="375.0">
                <children>
                   <Label layoutX="22.0" layoutY="26.0" text="Latitude    : " />
                   <Label layoutX="23.0" layoutY="65.0" prefHeight="2.0" prefWidth="60.0" text="Longitude :" />

@@ -4,7 +4,7 @@
     -fx-text-fill: white;
     -fx-font-family: Segoe UI;
     -fx-font-weight: 500;
-    -fx-cursor: hand;
+    -fx-cursor: hand !important;
 }
 
 #leftGroupBtn{
