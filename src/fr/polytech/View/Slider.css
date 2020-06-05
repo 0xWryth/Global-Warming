@@ -1,0 +1,33 @@
+/*******************************************************************************
+ *                                                                             *
+ * Slider                                                                      *
+ *                                                                             *
+ ******************************************************************************/
+
+.slider .thumb {
+    -fx-background-color: white;
+    -fx-background-insets: 0;
+    -fx-background-radius: 1.0em; /* makes sure this remains circular */
+    -fx-padding: 0.583333em;  /* 7 */
+    -fx-border-color: rgb(96, 94, 92);
+    -fx-border-radius: 10;
+    -fx-border-width: 2;
+}
+.slider:focused .thumb {
+    -fx-background-radius: 1.0em; /* makes sure this remains circular */
+}
+
+.slider:hover .thumb{
+    -fx-border-color: rgb(0, 90, 158);
+}
+
+.slider .track {
+    -fx-control-inner-background: rgb(200, 198, 196);
+    -fx-background-radius: 0.25em, 0.25em, 0.166667em; /* 3 3 2 */
+    -fx-padding: 0.25em; /* 3 */
+    -fx-background-insets: 0;
+}
+
+.slider:hover .track {
+    -fx-control-inner-background: rgb(0, 90, 158);
+}

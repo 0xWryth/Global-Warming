@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<HBox fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="740.0" prefWidth="1060.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.polytech.Controller.Controller">
+   <children>
+      <VBox fx:id="leftPane" prefHeight="740.0" prefWidth="760.0">
+         <children>
+            <Pane fx:id="earthPane" prefHeight="675.0" prefWidth="398.0" />
+            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="67.0" prefWidth="757.0">
+               <children>
+                  <Button fx:id="switchBtn" mnemonicParsing="false" prefHeight="36.0" prefWidth="76.0" stylesheets="@Button.css" text="Switch" textAlignment="CENTER">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button id="leftGroupBtn" fx:id="switchBtn11" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" stylesheets="@Button.css" textAlignment="CENTER">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <graphic>
+                        <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Assets/refresh.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button id="rightGroupBtn" fx:id="switchBtn1" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" stylesheets="@Button.css" textAlignment="CENTER">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets right="20.0" />
+                     </HBox.margin>
+                     <graphic>
+                        <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../Assets/play.png" />
+                           </image></ImageView>
+                     </graphic>
+                  </Button>
+                  <Slider fx:id="yearSlider" blockIncrement="2.0" majorTickUnit="1.0" max="2020.0" min="1980.0" minorTickCount="1" prefHeight="14.0" prefWidth="392.0" snapToTicks="true" stylesheets="@Slider.css" value="2020.0" />
+                  <Label fx:id="yearIndicatorLbl" prefWidth="60.0">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <VBox prefHeight="740.0" prefWidth="452.0" style="-fx-border-color: transparent transparent transparent rgb(96, 94, 92, 0.2);">
+         <children>
+            <Pane prefHeight="60.0" prefWidth="200.0" style="-fx-background-color: rgb(0, 120, 212);">
+               <children>
+                  <Label layoutX="21.0" layoutY="21.0" text="Propriété" textFill="WHITE">
+                     <font>
+                        <Font name="Segoe UI" size="16.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <Pane prefHeight="683.0" prefWidth="374.0">
+               <children>
+                  <Label layoutX="22.0" layoutY="26.0" text="Latitude    : " />
+                  <Label layoutX="23.0" layoutY="65.0" prefHeight="2.0" prefWidth="60.0" text="Longitude :" />
+                  <Pane layoutX="98.0" layoutY="20.0" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: rgb(0, 120, 212); -fx-background-radius: 2;">
+                     <children>
+                        <Label layoutX="14.0" layoutY="8.0" text="0" textFill="WHITE" />
+                     </children>
+                  </Pane>
+                  <Pane layoutX="98.0" layoutY="59.0" prefHeight="30.0" prefWidth="100.0" style="-fx-background-color: rgb(0, 120, 212); -fx-background-radius: 2;">
+                     <children>
+                        <Label layoutX="14.0" layoutY="8.0" text="0" textFill="WHITE" />
+                     </children>
+                  </Pane>
+               </children>
+            </Pane>
+         </children></VBox>
+   </children>
+</HBox>

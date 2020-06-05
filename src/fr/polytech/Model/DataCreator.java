@@ -61,7 +61,7 @@ public class DataCreator {
                             }
                         }
 
-                        var d = data.get(year);
+                        YearData d = data.get(year);
                         d.put(earthPosition, posTemp);
                         year++;
                     }
