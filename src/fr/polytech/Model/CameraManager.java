@@ -21,6 +21,8 @@ public class CameraManager {
     private static final double ROTATION_SPEED = 2.0;
     private static final double TRACK_SPEED = 0.6;
     private static final double SCROLL_SPEED = 0.5;
+    private static final double BLOCK_SCROLL_MAX = -2;
+    private static final double BLOCK_SCROLL_MIN = -10;
 
     private final Group cameraXform = new Group();
     private final Group cameraXform2 = new Group();
@@ -36,8 +38,8 @@ public class CameraManager {
     private Camera camera;
 
     public void resetCamera() {
-        cameraXform2.setTranslateX(0.0);
-        cameraXform2.setTranslateY(0.0);
+//        cameraXform2.setTranslateX(0.0);
+//        cameraXform2.setTranslateY(0.0);
 
         camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
 
@@ -101,8 +103,12 @@ public class CameraManager {
                     modifier = SHIFT_MULTIPLIER;
                 }
                 if (me.isPrimaryButtonDown()) {
-                    ry.setAngle(ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED);
-                    rx.setAngle(rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED);
+                    double newRyAngle = ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED;
+                    ry.setAngle(newRyAngle);
+                    double newRxAngle = rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED;
+                    if (newRxAngle >= -50.0 && newRxAngle <= 50.0) {
+                        rx.setAngle(newRxAngle);
+                    }
                 }
             }
         });
@@ -120,7 +126,12 @@ public class CameraManager {
                 double z = camera.getTranslateZ();
                 double newZ = z + event.getDeltaY() * MOUSE_SPEED * (modifier + SCROLL_SPEED);
                 if (newZ > CAMERA_MIN_DISTANCE) newZ = CAMERA_MIN_DISTANCE;
-                camera.setTranslateZ(newZ);
+
+                System.out.println(newZ);
+
+                if (newZ <= BLOCK_SCROLL_MAX && newZ >= BLOCK_SCROLL_MIN) {
+                    camera.setTranslateZ(newZ);
+                }
             }
         });
     }
