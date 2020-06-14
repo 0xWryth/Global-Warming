@@ -115,8 +115,6 @@ public class CameraManager {
                     mouseDeltaX = (mousePosX - mouseOldX) * 0.3 * (camera.getTranslateZ() / BLOCK_SCROLL_MAX);
                     mouseDeltaY = (mousePosY - mouseOldY) * 0.3 * (camera.getTranslateZ() / BLOCK_SCROLL_MAX);
 
-                    System.out.println((camera.getTranslateZ() / BLOCK_SCROLL_MAX) * 0.3);
-
                     double modifier = 1.0;
 
                     if (me.isControlDown()) {
