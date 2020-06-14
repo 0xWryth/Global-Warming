@@ -24,6 +24,19 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </Button>
+                  <Button fx:id="changeModelBtn" alignment="BOTTOM_LEFT" contentDisplay="TOP" layoutX="10.0" layoutY="610.0" mnemonicParsing="false" onAction="#changeEarthModel" style="-fx-background-insets: 0; -fx-border-image-insets: 0; -fx-border-insets: 0; -fx-opaque-insets: 0; -fx-padding: 0; -fx-border-color: white; -fx-border-width: 0; -fx-border-radius: 2; -fx-background-radius: 2;" stylesheets="@Button.css">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <Pane fx:id="alternativeContainerPane" prefHeight="30.0" prefWidth="50.0" style="-fx-background-color: white;">
+                           <children>
+                              <Pane fx:id="previewPane" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: white; -fx-background-radius: 0; -fx-border-radius: 0;" />
+                              <Label layoutX="2.0" layoutY="32.0" text="Mode" textFill="WHITE" />
+                           </children>
+                        </Pane>
+                     </graphic>
+                  </Button>
                </children>
             </Pane>
             <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="70.0" prefWidth="685.0">

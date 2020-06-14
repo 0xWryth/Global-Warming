@@ -6,6 +6,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Rotate;
+import javafx.util.Pair;
 
 public class CameraManager {
 
@@ -35,6 +36,9 @@ public class CameraManager {
     private double mouseDeltaX;
     private double mouseDeltaY;
 
+    private Boolean fixed;
+    private CameraManager follower;
+
     private Camera camera;
 
     public void resetCamera() {
@@ -45,9 +49,16 @@ public class CameraManager {
 
         ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
         rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+
+        if (follower != null) {
+            follower.resetCamera();
+            follower.camera.setTranslateZ(BLOCK_SCROLL_MAX - 1);
+        }
     }
 
     public CameraManager(Camera cam, Node mainRoot, Group root) {
+
+        fixed = false;
 
         camera = cam;
 
@@ -75,39 +86,69 @@ public class CameraManager {
         mainRoot.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent me) {
-                mousePosX = me.getSceneX();
-                mousePosY = me.getSceneY();
-                mouseOldX = me.getSceneX();
-                mouseOldY = me.getSceneY();
+                if (!fixed) {
+                    mousePosX = me.getSceneX();
+                    mousePosY = me.getSceneY();
+                    mouseOldX = me.getSceneX();
+                    mouseOldY = me.getSceneY();
 
-                // Set focus on the mainRoot to be able to detect key press
-                mainRoot.requestFocus();
+                    // Set focus on the mainRoot to be able to detect key press
+                    mainRoot.requestFocus();
+
+                    if (follower != null) {
+                        follower.mousePosX = me.getSceneX();
+                        follower.mousePosY = me.getSceneY();
+                        follower.mouseOldX = me.getSceneX();
+                        follower.mouseOldY = me.getSceneY();
+                    }
+                }
             }
         });
         mainRoot.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent me) {
-                mouseOldX = mousePosX;
-                mouseOldY = mousePosY;
-                mousePosX = me.getSceneX();
-                mousePosY = me.getSceneY();
-                mouseDeltaX = (mousePosX - mouseOldX);
-                mouseDeltaY = (mousePosY - mouseOldY);
+                if (!fixed) {
+                    mouseOldX = mousePosX;
+                    mouseOldY = mousePosY;
+                    mousePosX = me.getSceneX();
+                    mousePosY = me.getSceneY();
+                    mouseDeltaX = (mousePosX - mouseOldX) * 0.3 * (camera.getTranslateZ() / BLOCK_SCROLL_MAX);
+                    mouseDeltaY = (mousePosY - mouseOldY) * 0.3 * (camera.getTranslateZ() / BLOCK_SCROLL_MAX);
 
-                double modifier = 1.0;
+                    System.out.println((camera.getTranslateZ() / BLOCK_SCROLL_MAX) * 0.3);
 
-                if (me.isControlDown()) {
-                    modifier = CONTROL_MULTIPLIER;
-                }
-                if (me.isShiftDown()) {
-                    modifier = SHIFT_MULTIPLIER;
-                }
-                if (me.isPrimaryButtonDown()) {
-                    double newRyAngle = ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED;
-                    ry.setAngle(newRyAngle);
-                    double newRxAngle = rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED;
-                    if (newRxAngle >= -50.0 && newRxAngle <= 50.0) {
-                        rx.setAngle(newRxAngle);
+                    double modifier = 1.0;
+
+                    if (me.isControlDown()) {
+                        modifier = CONTROL_MULTIPLIER;
+                    }
+                    if (me.isShiftDown()) {
+                        modifier = SHIFT_MULTIPLIER;
+                    }
+                    if (me.isPrimaryButtonDown()) {
+                        double newRyAngle = ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED;
+                        ry.setAngle(newRyAngle);
+                        double newRxAngle = rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED;
+                        if (newRxAngle >= -50.0 && newRxAngle <= 50.0) {
+                            rx.setAngle(newRxAngle);
+                        }
+                    }
+
+                    if (follower != null) {
+                        follower.mouseOldX = mousePosX;
+                        follower.mouseOldY = mousePosY;
+                        follower.mousePosX = me.getSceneX();
+                        follower.mousePosY = me.getSceneY();
+                        follower.mouseDeltaX = (mousePosX - mouseOldX);
+                        follower.mouseDeltaY = (mousePosY - mouseOldY);
+                        if (me.isPrimaryButtonDown()) {
+                            double newRyAngle = ry.getAngle() + mouseDeltaX * modifier * ROTATION_SPEED;
+                            follower.ry.setAngle(newRyAngle);
+                            double newRxAngle = rx.getAngle() - mouseDeltaY * modifier * ROTATION_SPEED;
+                            if (newRxAngle >= -50.0 && newRxAngle <= 50.0) {
+                                follower.rx.setAngle(newRxAngle);
+                            }
+                        }
                     }
                 }
             }
@@ -115,22 +156,22 @@ public class CameraManager {
         mainRoot.setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
             public void handle(ScrollEvent event) {
-                double modifier = 1.0;
+                if (!fixed) {
+                    double modifier = 1.0;
 
-                if (event.isControlDown()) {
-                    modifier = CONTROL_MULTIPLIER;
-                }
-                if (event.isShiftDown()) {
-                    modifier = SHIFT_MULTIPLIER;
-                }
-                double z = camera.getTranslateZ();
-                double newZ = z + event.getDeltaY() * MOUSE_SPEED * (modifier + SCROLL_SPEED);
-                if (newZ > CAMERA_MIN_DISTANCE) newZ = CAMERA_MIN_DISTANCE;
+                    if (event.isControlDown()) {
+                        modifier = CONTROL_MULTIPLIER;
+                    }
+                    if (event.isShiftDown()) {
+                        modifier = SHIFT_MULTIPLIER;
+                    }
+                    double z = camera.getTranslateZ();
+                    double newZ = z + event.getDeltaY() * MOUSE_SPEED * (modifier + SCROLL_SPEED);
+                    if (newZ > CAMERA_MIN_DISTANCE) newZ = CAMERA_MIN_DISTANCE;
 
-                System.out.println(newZ);
-
-                if (newZ <= BLOCK_SCROLL_MAX && newZ >= BLOCK_SCROLL_MIN) {
-                    camera.setTranslateZ(newZ);
+                    if (newZ <= BLOCK_SCROLL_MAX && newZ >= BLOCK_SCROLL_MIN) {
+                        camera.setTranslateZ(newZ);
+                    }
                 }
             }
         });
@@ -142,7 +183,9 @@ public class CameraManager {
             public void handle(KeyEvent event) {
                 switch (event.getCode()) {
                     case ALT:
-                        resetCamera();
+                        if (!fixed) {
+                            resetCamera();
+                        }
                         break;
                     default:
 
@@ -151,4 +194,23 @@ public class CameraManager {
         });
     }
 
+    public void setFixed(Boolean b) {
+        fixed = b;
+    }
+
+    public void setFollower(CameraManager cm) {
+        follower = cm;
+        follower.camera.setTranslateZ(BLOCK_SCROLL_MAX - 1);
+    }
+
+    public Pair<Rotate, Rotate> getRotate() {
+        Pair<Rotate, Rotate> r = new Pair(rx, ry);
+
+        return r;
+    }
+
+    public void setRotate(Pair<Rotate, Rotate> p) {
+        rx.setAngle(p.getKey().getAngle());
+        ry.setAngle(p.getValue().getAngle());
+    }
 }

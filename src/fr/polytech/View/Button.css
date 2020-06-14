@@ -1,6 +1,7 @@
 .button{
     -fx-background-color: rgb(0, 120, 212);
     -fx-border-radius: 2;
+    -fx-background-radius: 2;
     -fx-text-fill: white;
     -fx-font-family: Segoe UI;
     -fx-font-weight: 500;
