@@ -17,12 +17,12 @@ import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
-import javafx.scene.shape.Box;
-import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Translate;
 import javafx.util.Pair;
 
 import java.net.URL;
@@ -55,16 +55,16 @@ public class Controller implements Initializable {
 
     private CameraManager cameraManager;
 
-    Group earth = new Group();
-    Group earthSvg = new Group();
+    private Group earth = new Group();
+    private Group earthSvg = new Group();
 
-    Group root3D, root3D2;
+    private Group root3D, root3D2;
 
-    Group quadrilataire = new Group();
+    private Group quadrilataire = new Group();
 
-    AppData appData;
+    private AppData appData;
 
-    int yearSliderValue = 2020;
+    private Boolean quadrilateralView = true;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -78,16 +78,8 @@ public class Controller implements Initializable {
 
         inverted = false;
 
-//        yearSlider.valueProperty().addListener(
-//                (observable, oldvalue, newvalue) ->
-//                {
-//                    int i = newvalue.intValue();
-//                    System.out.println(i);
-//                }
-//        );
-
         loadingEarth(inverted);
-        showAnomalyByYear(yearSliderValue);
+        showAnomalyByYear(1880);
     }
 
     private void changingLblText() {
@@ -118,6 +110,10 @@ public class Controller implements Initializable {
         else {
             Group g = new Group(objImporter.getImport());
             g.setId("earth");
+            g.setOnMouseClicked(e->{
+                PickResult pr = e.getPickResult();
+                System.out.println(pr.getIntersectedPoint());
+            });
             earth.getChildren().addAll(g);
         }
     }
@@ -184,35 +180,65 @@ public class Controller implements Initializable {
         System.gc();
     }
 
+    private void showQuadilataire(int lat, int lon, HashMap<EarthPosition, Double> anomaliesFromYear,
+                                  double minDif, double maxDif,
+                                  ArrayList<PhongMaterial> phongMaterials) {
+        EarthPosition earthPosition = new EarthPosition(lat, lon);
+        final Double anomaly = anomaliesFromYear.get(earthPosition);
+
+        if (anomaly != null) {
+            final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
+            final int closeTo = (int) Math.round(anomalyColorDouble * 10);
+
+            PhongMaterial material = phongMaterials.get(closeTo);
+
+            // parent, topRight, bottomRight, bottomLeft, topLeft, material
+
+            Point3D topLeft = getCoordTo3dCoord(lat + 4, lon, 1.01f);
+            Point3D topRight = getCoordTo3dCoord(lat + 4, lon + 4, 1.01f);
+            Point3D bottomLeft = getCoordTo3dCoord(lat, lon, 1.01f);
+            Point3D bottomRight = getCoordTo3dCoord(lat, lon + 4, 1.01f);
+
+            Utils.AddQuadrilateral(quadrilataire, topRight, bottomRight, bottomLeft, topLeft, material);
+        }
+    }
+
+    private void showHisto(int lat, int lon, HashMap<EarthPosition, Double> anomaliesFromYear,
+                                  double minDif, double maxDif,
+                                  ArrayList<PhongMaterial> phongMaterials) {
+        EarthPosition earthPosition = new EarthPosition(lat, lon);
+        final Double anomaly = anomaliesFromYear.get(earthPosition);
+
+        if (anomaly != null) {
+            final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
+            int closeTo = (int) Math.round(anomalyColorDouble * 10);
+
+            PhongMaterial material = phongMaterials.get(closeTo);
+
+            Cylinder cylinder = Utils.createLine(new Point3D(0, 0, 0), getCoordTo3dCoord(lat, lon, 1f +
+                    anomaly.floatValue() / 20));
+            cylinder.setMaterial(material);
+
+            quadrilataire.getChildren().addAll(cylinder);
+        }
+    }
+
     public void showAnomalyByYear(int year) {
         root3D.getChildren().remove(quadrilataire);
-        quadrilataire = new Group();
         quadrilataire.setId("quadrilataire");
 
         final HashMap<EarthPosition, Double> anomaliesFromYear = appData.getAnomaliesFromYear(year);
         final double minDif = appData.getMinDif();
         final double maxDif = appData.getMaxDif();
-        ArrayList<PhongMaterial> phongMaterials = ColorScale.redToBlue(0.001f);
+        ArrayList<PhongMaterial> phongMaterials = ColorScale.redToBlue(1f);
 
         for (int lat = -88; lat <= 88; lat = lat + 4) {
             for (int lon = -178; lon <= 178; lon = lon + 4) {
-                EarthPosition earthPosition = new EarthPosition(lat, lon);
-                final Double anomaly = anomaliesFromYear.get(earthPosition);
-
-                if (anomaly != null) {
-                    final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
-                    final int closeTo = (int) Math.round(anomalyColorDouble * 10);
-
-                    PhongMaterial material = phongMaterials.get(closeTo);
-
-                    // parent, topRight, bottomRight, bottomLeft, topLeft, material
-
-                    Point3D topLeft = getCoordTo3dCoord(lat + 4, lon, 1.01f);
-                    Point3D topRight = getCoordTo3dCoord(lat + 4, lon + 4, 1.01f);
-                    Point3D bottomLeft = getCoordTo3dCoord(lat, lon, 1.01f);
-                    Point3D bottomRight = getCoordTo3dCoord(lat, lon + 4, 1.01f);
-
-                    Utils.AddQuadrilateral(quadrilataire, topRight, bottomRight, bottomLeft, topLeft, material);
+                if (!quadrilateralView) {
+                    showQuadilataire(lat, lon, anomaliesFromYear, minDif, maxDif, phongMaterials);
+                }
+                else {
+                    showHisto(lat, lon, anomaliesFromYear, minDif, maxDif, phongMaterials);
                 }
             }
         }
@@ -220,7 +246,12 @@ public class Controller implements Initializable {
         root3D.getChildren().addAll(quadrilataire);
     }
 
-    public void test() {
+    public void changeYear() {
+        showAnomalyByYear((int) yearSlider.getValue());
+    }
+
+    public void switchMode(ActionEvent actionEvent) {
+        quadrilateralView = !quadrilateralView;
         showAnomalyByYear((int) yearSlider.getValue());
     }
 }

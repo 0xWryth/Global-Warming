@@ -41,7 +41,7 @@
             </Pane>
             <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="70.0" prefWidth="685.0">
                <children>
-                  <Button fx:id="switchBtn" mnemonicParsing="false" prefHeight="36.0" prefWidth="76.0" stylesheets="@Button.css" text="Switch" textAlignment="CENTER">
+                  <Button fx:id="switchBtn" mnemonicParsing="false" onAction="#switchMode" prefHeight="36.0" prefWidth="76.0" stylesheets="@Button.css" text="Switch" textAlignment="CENTER">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
@@ -75,7 +75,7 @@
                            </image></ImageView>
                      </graphic>
                   </Button>
-                  <Slider fx:id="yearSlider" blockIncrement="2.0" majorTickUnit="1.0" max="2020.0" min="1980.0" minorTickCount="1" onMouseDragOver="#test" onMouseReleased="#test" prefHeight="14.0" prefWidth="392.0" snapToTicks="true" stylesheets="@Slider.css" value="2020.0" />
+                  <Slider fx:id="yearSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2020.0" min="1880.0" minorTickCount="1" onMouseReleased="#changeYear" prefHeight="14.0" prefWidth="392.0" snapToTicks="true" stylesheets="@Slider.css" value="1880.0" />
                   <Label fx:id="yearIndicatorLbl" prefWidth="60.0">
                      <padding>
                         <Insets left="10.0" />
