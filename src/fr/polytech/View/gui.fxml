@@ -75,7 +75,7 @@
                            </image></ImageView>
                      </graphic>
                   </Button>
-                  <Slider fx:id="yearSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2020.0" min="1880.0" minorTickCount="1" onMouseReleased="#changeYear" prefHeight="14.0" prefWidth="392.0" snapToTicks="true" stylesheets="@Slider.css" value="1880.0" />
+                  <Slider fx:id="yearSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2020.0" min="1880.0" minorTickCount="1" onMouseDragged="#changeYear" prefHeight="14.0" prefWidth="392.0" snapToTicks="true" stylesheets="@Slider.css" value="1880.0" />
                   <Label fx:id="yearIndicatorLbl" prefWidth="60.0">
                      <padding>
                         <Insets left="10.0" />

@@ -1,5 +1,7 @@
 package fr.polytech.Model;
 
+import com.interactivemesh.jfx.importer.ImportException;
+import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.paint.PhongMaterial;
@@ -8,6 +10,8 @@ import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+
+import java.net.URL;
 
 public class Utils {
     private static final float TEXTURE_LAT_OFFSET = -0.2f;
@@ -25,7 +29,7 @@ public class Utils {
     }
 
     public static void AddQuadrilateral(Group parent, Point3D topRight, Point3D bottomRight, Point3D bootmLeft,
-                                  Point3D topLeft, PhongMaterial material) {
+                                  Point3D topLeft, PhongMaterial material, String id) {
         final TriangleMesh triangleMesh = new TriangleMesh();
 
         final float[] points = {
@@ -53,6 +57,7 @@ public class Utils {
 
         final MeshView meshView = new MeshView(triangleMesh);
         meshView.setMaterial(material);
+        meshView.setId(id);
         parent.getChildren().addAll(meshView);
     }
 
@@ -73,5 +78,28 @@ public class Utils {
         line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
 
         return line;
+    }
+
+    public static Group loadingEarthModel(Boolean svgMap) {
+        Group group = new Group();
+
+        ObjModelImporter objImporter = new ObjModelImporter();
+        try {
+            String URL = svgMap ? "/fr/polytech/Assets/earthSvg.obj" : "/fr/polytech/Assets/earth.obj";
+            java.net.URL modeUrl = Utils.class.getResource(URL);
+            objImporter.read(modeUrl);
+        } catch(ImportException e) {
+            System.out.println(e);
+        }
+
+
+        MeshView[] mv = objImporter.getImport();
+//            g.setOnMouseClicked(e->{
+//                PickResult pr = e.getPickResult();
+//                System.out.println(pr.getIntersectedPoint());
+//            });
+        group.getChildren().addAll(mv);
+
+        return group;
     }
 }
