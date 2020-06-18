@@ -68,6 +68,7 @@ public class Controller implements Initializable {
     private Boolean quadrilateralView = true;
 
     private ArrayList<PhongMaterial> quadriColor;
+    private ArrayList<PhongMaterial> quadriFullColor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -77,6 +78,7 @@ public class Controller implements Initializable {
         earthPane.setStyle("-fx-background-color: radial-gradient(focus-angle 45deg, focus-distance 5%, center 50% 50%, radius 100%, reflect, white 10%, white 15%, rgb(85, 124, 168) 60%, rgb(29,37,83) 80%)");
 
         quadriColor = ColorScale.redToBlue(0.001f);
+        quadriFullColor = ColorScale.redToBlue(1);
 
         creatingQuadriAndHisto();
 
@@ -87,6 +89,33 @@ public class Controller implements Initializable {
         displayingEarth(inverted);
 
         showQuadri(2020);
+        showHisto(2020);
+    }
+
+    private void showHisto(int year) {
+        final HashMap<EarthPosition, Double> anomaliesFromYear = appData.getAnomaliesFromYear(year);
+        final double minDif = appData.getMinDif();
+        final double maxDif = appData.getMaxDif();
+
+        histo.getChildren().forEach((cylinder) -> {
+            Cylinder cyl = (Cylinder) cylinder;
+
+            String[] latlon = cyl.getId().split("\\|");
+            int lat = Integer.parseInt(latlon[0]);
+            int lon = Integer.parseInt(latlon[1]);
+
+            EarthPosition earthPosition = new EarthPosition(lat, lon);
+            final Double anomaly = anomaliesFromYear.get(earthPosition);
+
+            final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
+            int closeTo = (int) Math.round(anomalyColorDouble * 9);
+
+            PhongMaterial material = quadriFullColor.get(closeTo);
+
+            double height = Math.round((1f + anomaly.floatValue() / 20) * 100.0) / 100.0;
+            cyl.setHeight(height);
+            cyl.setMaterial(material);
+        });
     }
 
     private void showQuadri(int year) {
@@ -130,6 +159,7 @@ public class Controller implements Initializable {
                 Cylinder cylinder = Utils.createLine(new Point3D(0, 0, 0),
                         getCoordTo3dCoord(lat, lon, 1f));
                 cylinder.setMaterial(material);
+                cylinder.setId(id);
 
                 histo.getChildren().addAll(cylinder);
             }
@@ -164,7 +194,11 @@ public class Controller implements Initializable {
         AmbientLight light = new AmbientLight(Color.WHITE);
         light.setId("light");
         root3D.getChildren().add(light);
+
         root3D.getChildren().add(quadrilataire);
+        root3D.getChildren().add(histo);
+        quadrilataire.setVisible(!invertMode);
+        histo.setVisible(invertMode);
 
         // Camera
         PerspectiveCamera camera = new PerspectiveCamera(true);
@@ -213,31 +247,13 @@ public class Controller implements Initializable {
         Pair<Rotate, Rotate> p = cameraManager.getRotate();
         displayingEarth(inverted);
         cameraManager.setRotate(p);
+
         System.gc();
-    }
-
-    private void showHisto(int lat, int lon, HashMap<EarthPosition, Double> anomaliesFromYear,
-                                  double minDif, double maxDif,
-                                  ArrayList<PhongMaterial> phongMaterials) {
-        EarthPosition earthPosition = new EarthPosition(lat, lon);
-        final Double anomaly = anomaliesFromYear.get(earthPosition);
-
-        if (anomaly != null) {
-            final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
-            int closeTo = (int) Math.round(anomalyColorDouble * 10);
-
-            PhongMaterial material = phongMaterials.get(closeTo);
-
-            Cylinder cylinder = Utils.createLine(new Point3D(0, 0, 0), getCoordTo3dCoord(lat, lon, 1f +
-                    anomaly.floatValue() / 20));
-            cylinder.setMaterial(material);
-
-            quadrilataire.getChildren().addAll(cylinder);
-        }
     }
 
     public void changeYear() {
         showQuadri((int) yearSlider.getValue());
+        showHisto((int) yearSlider.getValue());
     }
 
     public void switchMode(ActionEvent actionEvent) {
