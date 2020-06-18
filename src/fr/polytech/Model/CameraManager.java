@@ -20,7 +20,6 @@ public class CameraManager {
     private static final double SHIFT_MULTIPLIER = 10.0;
     private static final double MOUSE_SPEED = 0.1;
     private static final double ROTATION_SPEED = 2.0;
-    private static final double TRACK_SPEED = 0.6;
     private static final double SCROLL_SPEED = 0.5;
     private static final double BLOCK_SCROLL_MAX = -2;
     private static final double BLOCK_SCROLL_MIN = -10;
@@ -76,8 +75,7 @@ public class CameraManager {
         ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
         rx.setAngle(CAMERA_INITIAL_X_ANGLE);
 
-        // Add keyboard and mouse handler
-        handleKeyboard(mainRoot, root);
+        // Add mouse handler
         handleMouse(mainRoot, root);
     }
 
@@ -170,23 +168,6 @@ public class CameraManager {
                     if (newZ <= BLOCK_SCROLL_MAX && newZ >= BLOCK_SCROLL_MIN) {
                         camera.setTranslateZ(newZ);
                     }
-                }
-            }
-        });
-    }
-
-    private void handleKeyboard(Node mainRoot, final Node root) {
-        mainRoot.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                switch (event.getCode()) {
-                    case ALT:
-                        if (!fixed) {
-                            resetCamera();
-                        }
-                        break;
-                    default:
-
                 }
             }
         });

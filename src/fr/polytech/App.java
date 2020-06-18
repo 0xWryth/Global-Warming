@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -28,10 +29,10 @@ public class App extends Application {
             final FXMLLoader fxmlLoader = new FXMLLoader(url);
 
             // Creating GUI root
-            final HBox root = (HBox) fxmlLoader.load();
+            final VBox root = (VBox) fxmlLoader.load();
 
             // Creating JAVAFX Scene
-            final Scene scene = new Scene(root, 1060, 740);
+            final Scene scene = new Scene(root, 685, 740);
             primaryStage.setScene(scene);
         } catch (IOException ex) {
             System.err.println("Loading error: " + ex);

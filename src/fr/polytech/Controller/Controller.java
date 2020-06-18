@@ -1,8 +1,5 @@
 package fr.polytech.Controller;
 
-import com.interactivemesh.jfx.importer.ImportException;
-import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
-import com.sun.javaws.IconUtil;
 import fr.polytech.Model.*;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
@@ -13,16 +10,10 @@ import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.Light;
-import javafx.scene.effect.Lighting;
-import javafx.scene.image.Image;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.PickResult;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
-import javafx.scene.transform.Translate;
 import javafx.util.Pair;
 
 import java.net.URL;
@@ -51,6 +42,9 @@ public class Controller implements Initializable {
     @FXML
     Pane previewPane = new Pane();
 
+    @FXML
+    Pane legendPane;
+
     private Boolean inverted;
 
     private CameraManager cameraManager;
@@ -65,10 +59,8 @@ public class Controller implements Initializable {
 
     private AppData appData;
 
-    private Boolean quadrilateralView = true;
-
     private ArrayList<PhongMaterial> quadriColor;
-    private ArrayList<PhongMaterial> quadriFullColor;
+    private ArrayList<PhongMaterial> histoColor;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -77,8 +69,8 @@ public class Controller implements Initializable {
         changingLblText();
         earthPane.setStyle("-fx-background-color: radial-gradient(focus-angle 45deg, focus-distance 5%, center 50% 50%, radius 100%, reflect, white 10%, white 15%, rgb(85, 124, 168) 60%, rgb(29,37,83) 80%)");
 
-        quadriColor = ColorScale.redToBlue(0.001f);
-        quadriFullColor = ColorScale.redToBlue(1);
+        quadriColor = ColorHelper.redToBlue(0.001f);
+        histoColor = ColorHelper.redAndBlue();
 
         creatingQuadriAndHisto();
 
@@ -90,6 +82,23 @@ public class Controller implements Initializable {
 
         showQuadri(2020);
         showHisto(2020);
+
+        showLegend(inverted);
+    }
+
+    private void showLegend(Boolean inverted) {
+        ArrayList<PhongMaterial> phongMaterials = inverted ? histoColor : quadriColor;
+
+        legendPane.getChildren().forEach((pane) -> {
+            final String idStr = pane.getId();
+            final String[] idArr = idStr.split("_");
+            final String id = idArr[1];
+
+            String color = phongMaterials.get(Integer.parseInt(id) - 1).getSpecularColor().toString();
+            color = color.substring(2, 8);
+            String style = "-fx-background-color: #" + color;
+            pane.setStyle(style);
+        });
     }
 
     private void showHisto(int year) {
@@ -110,9 +119,12 @@ public class Controller implements Initializable {
             final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
             int closeTo = (int) Math.round(anomalyColorDouble * 9);
 
-            PhongMaterial material = quadriFullColor.get(closeTo);
+            PhongMaterial material = histoColor.get(closeTo);
 
             double height = Math.round((1f + anomaly.floatValue() / 20) * 100.0) / 100.0;
+            if (anomaly < 0) {
+                height = 0;
+            }
             cyl.setHeight(height);
             cyl.setMaterial(material);
         });
@@ -247,6 +259,7 @@ public class Controller implements Initializable {
         Pair<Rotate, Rotate> p = cameraManager.getRotate();
         displayingEarth(inverted);
         cameraManager.setRotate(p);
+        showLegend(inverted);
 
         System.gc();
     }
@@ -254,10 +267,5 @@ public class Controller implements Initializable {
     public void changeYear() {
         showQuadri((int) yearSlider.getValue());
         showHisto((int) yearSlider.getValue());
-    }
-
-    public void switchMode(ActionEvent actionEvent) {
-//        quadrilateralView = !quadrilateralView;
-//        showAnomalyByYear((int) yearSlider.getValue());
     }
 }
