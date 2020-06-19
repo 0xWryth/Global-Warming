@@ -3,11 +3,14 @@ package fr.polytech.Controller;
 import fr.polytech.Model.*;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Point3D;
 import javafx.scene.*;
+import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -51,6 +54,12 @@ public class Controller implements Initializable {
     @FXML
     Label latLonLbl;
 
+    @FXML
+    ScatterChart scatterChart;
+
+    @FXML
+    Pane graphPane;
+
     private Boolean inverted;
 
     private CameraManager cameraManager;
@@ -86,6 +95,8 @@ public class Controller implements Initializable {
         quadriColor = ColorHelper.redToBlue(0.001f);
         histoColor = ColorHelper.redAndBlue();
 
+        scatterChart.setLegendVisible(false);
+
         creatingQuadriAndHisto();
 
         loadingEarth();
@@ -100,6 +111,32 @@ public class Controller implements Initializable {
         showHisto(sliderYear);
 
         showLegend(inverted);
+    }
+
+    @FXML
+    private void showGraph() {
+        graphPane.setVisible(true);
+
+        final String latLonStr = latLonLbl.getText();
+        final String[] latLonArr = latLonStr.split(", ");
+        final String latStr = latLonArr[0].split("[.]")[0];
+        final String lonStr = latLonArr[1].split("[.]")[0];
+
+        double lat = Double.parseDouble(latStr);
+        lat = lat - lat % 4;
+        double lon = Double.parseDouble(lonStr);
+        lon = lon - lon % 4 + 2.0;
+
+        System.out.println(lat + " | " + lon);
+        ArrayList<Double> anomalies = appData.getAnomaliesFromArea(new EarthPosition(lat, lon));
+        System.out.println(anomalies);
+
+        XYChart.Series series = new XYChart.Series();
+
+        for (int i = 0; i < anomalies.size(); i++) {
+            series.getData().add(new XYChart.Data(1880 + i, anomalies.get(i)));
+        }
+        scatterChart.getData().add(series);
     }
 
     private void creatingAnimation() {
