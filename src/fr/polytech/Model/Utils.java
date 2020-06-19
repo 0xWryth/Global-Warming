@@ -4,14 +4,13 @@ import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
+import javafx.scene.input.PickResult;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-
-import java.net.URL;
 
 public class Utils {
     private static final float TEXTURE_LAT_OFFSET = -0.2f;
@@ -28,8 +27,8 @@ public class Utils {
                         * Math.cos(Math.toRadians(lat_cor))*radius);
     }
 
-    public static void AddQuadrilateral(Group parent, Point3D topRight, Point3D bottomRight, Point3D bootmLeft,
-                                  Point3D topLeft, PhongMaterial material, String id) {
+    public static MeshView AddQuadrilateral(Point3D topRight, Point3D bottomRight, Point3D bootmLeft,
+                                            Point3D topLeft, PhongMaterial material, String id) {
         final TriangleMesh triangleMesh = new TriangleMesh();
 
         final float[] points = {
@@ -58,7 +57,7 @@ public class Utils {
         final MeshView meshView = new MeshView(triangleMesh);
         meshView.setMaterial(material);
         meshView.setId(id);
-        parent.getChildren().addAll(meshView);
+        return meshView;
     }
 
     public static Cylinder createLine(Point3D origin, Point3D target) {
@@ -94,12 +93,22 @@ public class Utils {
 
 
         MeshView[] mv = objImporter.getImport();
-//            g.setOnMouseClicked(e->{
-//                PickResult pr = e.getPickResult();
-//                System.out.println(pr.getIntersectedPoint());
-//            });
         group.getChildren().addAll(mv);
 
         return group;
+    }
+
+    public static double roundXNumber(double num, int x) {
+        double xPow = Math.pow(10, x);
+        return Math.round(num * xPow) / xPow;
+    }
+
+    public static String cursorToCoords(PickResult res)
+    {
+        Point3D coords = res.getIntersectedPoint();
+        double lat = -Math.toDegrees(Math.asin(coords.getY() / Math.sqrt(Math.pow(coords.getX(), 2) + Math.pow(coords.getY(), 2) + Math.pow(coords.getZ(), 2))) );
+        double lon = -Math.toDegrees(Math.atan2(coords.getX(), coords.getZ()));
+
+        return roundXNumber(lat, 4) + ", " + roundXNumber(lon, 4);
     }
 }

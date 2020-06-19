@@ -16,3 +16,10 @@
 #rightGroupBtn{
     -fx-background-radius: 0 2 2 0 !important;
 }
+
+#graphicButton{
+    -fx-background-color: rgba(0, 0, 0, 0) !important;
+    -fx-text-fill: #999 !important;
+    -fx-padding: 0 !important;
+    -fx-label-padding: 0 !important;
+}

@@ -11,6 +11,7 @@ import javafx.scene.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.PickResult;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
 import javafx.scene.shape.*;
@@ -23,7 +24,7 @@ import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
-import static fr.polytech.Model.Utils.getCoordTo3dCoord;
+import static fr.polytech.Model.Utils.*;
 
 public class Controller implements Initializable {
     @FXML
@@ -46,6 +47,9 @@ public class Controller implements Initializable {
 
     @FXML
     Pane legendPane;
+
+    @FXML
+    Label latLonLbl;
 
     private Boolean inverted;
 
@@ -159,7 +163,7 @@ public class Controller implements Initializable {
 
             PhongMaterial material = histoColor.get(closeTo);
 
-            double height = Math.round((1f + anomaly.floatValue() / 20) * 100.0) / 100.0;
+            double height = roundXNumber((1f + anomaly.floatValue() / 20), 2);
             if (anomaly < 0) {
                 height = 0;
             }
@@ -204,7 +208,12 @@ public class Controller implements Initializable {
                 Point3D bottomRight = getCoordTo3dCoord(lat, lon + 4, 1.01f);
 
                 String id = Integer.toString(lat) + "|" + Integer.toString(lon);
-                Utils.AddQuadrilateral(quadrilataire, topRight, bottomRight, bottomLeft, topLeft, material, id);
+                MeshView mv = Utils.AddQuadrilateral(topRight, bottomRight, bottomLeft, topLeft, material, id);
+                mv.setOnMouseClicked(e->{
+                    PickResult pr = e.getPickResult();
+                    latLonLbl.setText(cursorToCoords(pr));
+                });
+                quadrilataire.getChildren().add(mv);
 
                 Cylinder cylinder = Utils.createLine(new Point3D(0, 0, 0),
                         getCoordTo3dCoord(lat, lon, 1f));
@@ -231,6 +240,10 @@ public class Controller implements Initializable {
 
     private void loadingSvgEarth() {
         earthSvg = Utils.loadingEarthModel(true);
+        earthSvg.setOnMouseClicked(e->{
+            PickResult pr = e.getPickResult();
+            latLonLbl.setText(cursorToCoords(pr));
+        });
     }
 
     private void displayingEarth(Boolean invertMode) {

@@ -15,7 +15,7 @@
 
 <VBox fx:id="leftPane" prefHeight="740.0" prefWidth="685.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.polytech.Controller.Controller">
    <children>
-      <Pane>
+      <Pane fx:id="floattingPane">
          <children>
             <Pane id="earthPane" fx:id="earthPane" prefHeight="670.0" prefWidth="685.0" style="-fx-background-color: lightGrey;" stylesheets="@EarthPane.css">
                <children>
@@ -58,6 +58,13 @@
                   <Pane fx:id="legendPane_10" prefHeight="30.0" prefWidth="30.0" />
                </children>
             </VBox>
+            <Pane fx:id="infoPane" layoutX="242.5" layoutY="600.0" prefHeight="60.0" prefWidth="200.0" style="-fx-background-color: white;">
+               <children>
+                  <Pane layoutX="4.0" layoutY="4.0" prefHeight="52.0" prefWidth="72.0" style="-fx-background-color: lightGray;" />
+                  <Label fx:id="latLonLbl" layoutX="86.0" layoutY="6.0" text="44.0, 0" />
+                  <Button id="graphicButton" layoutX="86.0" layoutY="22.0" mnemonicParsing="false" stylesheets="@Button.css" text="Graphique" />
+               </children>
+            </Pane>
          </children>
       </Pane>
       <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="70.0" prefWidth="685.0">
