@@ -2,8 +2,8 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.ScatterChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
@@ -15,7 +15,6 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import javafx.scene.chart.ScatterChart?>
 <VBox fx:id="leftPane" prefHeight="740.0" prefWidth="685.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.polytech.Controller.Controller">
    <children>
       <Pane fx:id="floattingPane">
@@ -68,7 +67,7 @@
                   <Button id="graphicButton" fx:id="graphicBtn" layoutX="86.0" layoutY="22.0" mnemonicParsing="false" onAction="#showGraph" stylesheets="@Button.css" text="Graphique" />
                </children>
             </Pane>
-            <Pane fx:id="graphPane" prefHeight="670.0" prefWidth="685.0" style="-fx-background-color: rgba(0, 0, 0, 0.75);" visible="false">
+            <Pane fx:id="graphPane" onMouseClicked="#closeGraphPane" prefHeight="670.0" prefWidth="685.0" style="-fx-background-color: rgba(0, 0, 0, 0.75);" visible="false">
                <children>
                   <ScatterChart fx:id="scatterChart" layoutX="93.0" layoutY="142.0" style="-fx-background-color: white;">
                     <xAxis>

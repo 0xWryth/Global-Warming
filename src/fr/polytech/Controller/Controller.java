@@ -1,5 +1,6 @@
 package fr.polytech.Controller;
 
+import com.sun.javaws.IconUtil;
 import fr.polytech.Model.*;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
@@ -14,6 +15,7 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.*;
@@ -127,9 +129,9 @@ public class Controller implements Initializable {
         double lon = Double.parseDouble(lonStr);
         lon = lon - lon % 4 + 2.0;
 
-        System.out.println(lat + " | " + lon);
         ArrayList<Double> anomalies = appData.getAnomaliesFromArea(new EarthPosition(lat, lon));
-        System.out.println(anomalies);
+
+        scatterChart.getData().removeAll(scatterChart.getData());
 
         XYChart.Series series = new XYChart.Series();
 
@@ -367,6 +369,14 @@ public class Controller implements Initializable {
         }
         else {
             animation.stop();
+        }
+    }
+
+    public void closeGraphPane(MouseEvent mouseEvent) {
+        PickResult pr = mouseEvent.getPickResult();
+        Node node = pr.getIntersectedNode();
+        if (node instanceof Pane && node.getId().equals("graphPane")) {
+            graphPane.setVisible(false);
         }
     }
 }
