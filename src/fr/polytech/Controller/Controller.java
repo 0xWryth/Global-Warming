@@ -1,6 +1,7 @@
 package fr.polytech.Controller;
 
 import fr.polytech.Model.*;
+import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import javafx.util.Pair;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
 import static fr.polytech.Model.Utils.getCoordTo3dCoord;
@@ -62,6 +64,14 @@ public class Controller implements Initializable {
     private ArrayList<PhongMaterial> quadriColor;
     private ArrayList<PhongMaterial> histoColor;
 
+    private boolean playingAnimation = false;
+
+    private float animationSpeed = 1.0f;
+
+    private AnimationTimer animation;
+
+    private int sliderYear = 2020;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         appData = DataCreator.readFile("C:\\Users\\Lucas\\Documents\\MyDango\\PROJET-IHM-LucasBriatte\\src\\fr\\polytech\\Assets\\tempanomaly_4x4grid.csv");
@@ -77,13 +87,41 @@ public class Controller implements Initializable {
         loadingEarth();
         loadingSvgEarth();
 
+        creatingAnimation();
+
         inverted = false;
         displayingEarth(inverted);
 
-        showQuadri(2020);
-        showHisto(2020);
+        showQuadri(sliderYear);
+        showHisto(sliderYear);
 
         showLegend(inverted);
+    }
+
+    private void creatingAnimation() {
+        animation = new AnimationTimer() {
+            private long startNanoTime;
+
+            @Override
+            public void start() {
+                startNanoTime = System.nanoTime();
+                super.start();
+            }
+
+            @Override
+            public void handle(long now) {
+                if (now - startNanoTime >= 1e9 / 4) {
+                    startNanoTime = System.nanoTime();
+                    yearSlider.setValue(sliderYear + 1);
+                    int maxYear = appData.getYearList().stream().mapToInt(v -> v)
+                            .max().orElseThrow(NoSuchElementException::new);
+                    if (sliderYear >= maxYear) {
+                        playAnimation();
+                    }
+                    changeYear();
+                }
+            }
+        };
     }
 
     private void showLegend(Boolean inverted) {
@@ -265,7 +303,20 @@ public class Controller implements Initializable {
     }
 
     public void changeYear() {
-        showQuadri((int) yearSlider.getValue());
-        showHisto((int) yearSlider.getValue());
+        sliderYear = (int) yearSlider.getValue();
+        showQuadri(sliderYear);
+        showHisto(sliderYear);
+    }
+
+    public void playAnimation() {
+        playingAnimation = !playingAnimation;
+        yearSlider.setDisable(playingAnimation);
+
+        if (playingAnimation) {
+            animation.start();
+        }
+        else {
+            animation.stop();
+        }
     }
 }

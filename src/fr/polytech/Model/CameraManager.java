@@ -41,9 +41,6 @@ public class CameraManager {
     private Camera camera;
 
     public void resetCamera() {
-//        cameraXform2.setTranslateX(0.0);
-//        cameraXform2.setTranslateY(0.0);
-
         camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
 
         ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
