@@ -118,6 +118,7 @@ public class Controller implements Initializable {
     @FXML
     private void showGraph() {
         graphPane.setVisible(true);
+        scatterChart.getData().clear();
 
         final String latLonStr = latLonLbl.getText();
         final String[] latLonArr = latLonStr.split(", ");
@@ -131,12 +132,12 @@ public class Controller implements Initializable {
 
         ArrayList<Double> anomalies = appData.getAnomaliesFromArea(new EarthPosition(lat, lon));
 
-        scatterChart.getData().removeAll(scatterChart.getData());
-
         XYChart.Series series = new XYChart.Series();
 
         for (int i = 0; i < anomalies.size(); i++) {
-            series.getData().add(new XYChart.Data(1880 + i, anomalies.get(i)));
+            if (!anomalies.get(i).isNaN()) {
+                series.getData().add(new XYChart.Data(1880 + i, anomalies.get(i)));
+            }
         }
         scatterChart.getData().add(series);
     }
@@ -188,26 +189,38 @@ public class Controller implements Initializable {
         final double maxDif = appData.getMaxDif();
 
         histo.getChildren().forEach((cylinder) -> {
-            Cylinder cyl = (Cylinder) cylinder;
-
-            String[] latlon = cyl.getId().split("\\|");
-            int lat = Integer.parseInt(latlon[0]);
-            int lon = Integer.parseInt(latlon[1]);
+            String[] latlon = cylinder.getId().split("\\|");
+            int lat = Integer.parseInt(latlon[1]);
+            int lon = Integer.parseInt(latlon[2]);
 
             EarthPosition earthPosition = new EarthPosition(lat, lon);
             final Double anomaly = anomaliesFromYear.get(earthPosition);
 
-            final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
-            int closeTo = (int) Math.round(anomalyColorDouble * 9);
+            if (cylinder instanceof Cylinder) {
+                Cylinder cyl = (Cylinder) cylinder;
 
-            PhongMaterial material = histoColor.get(closeTo);
+                final double anomalyColorDouble = (maxDif - anomaly) / maxDif;
+                int closeTo = (int) Math.round(anomalyColorDouble * 4);
 
-            double height = roundXNumber((1f + anomaly.floatValue() / 20), 2);
-            if (anomaly < 0) {
-                height = 0;
+                PhongMaterial material = histoColor.get(closeTo);
+
+                double height = roundXNumber((1f + anomaly.floatValue() / 12), 2);
+                if (anomaly < 0) {
+                    height = 0;
+                }
+                cyl.setHeight(height);
+                cyl.setMaterial(material);
+            } else if (cylinder instanceof MeshView) {
+                MeshView mv = (MeshView) cylinder;
+
+                mv.setVisible(anomaly <= 0);
+
+                final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
+                int closeTo = (int) Math.round(anomalyColorDouble * 5);
+
+                PhongMaterial material = histoColor.get(closeTo + 4);
+                mv.setMaterial(material);
             }
-            cyl.setHeight(height);
-            cyl.setMaterial(material);
         });
     }
 
@@ -220,8 +233,8 @@ public class Controller implements Initializable {
             MeshView m = (MeshView) mv;
 
             String[] latlon = mv.getId().split("\\|");
-            int lat = Integer.parseInt(latlon[0]);
-            int lon = Integer.parseInt(latlon[1]);
+            int lat = Integer.parseInt(latlon[1]);
+            int lon = Integer.parseInt(latlon[2]);
 
             Double anomaly = anomaliesFromYear.get(new EarthPosition(lat, lon));
             final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
@@ -246,8 +259,8 @@ public class Controller implements Initializable {
                 Point3D bottomLeft = getCoordTo3dCoord(lat, lon, 1.01f);
                 Point3D bottomRight = getCoordTo3dCoord(lat, lon + 4, 1.01f);
 
-                String id = Integer.toString(lat) + "|" + Integer.toString(lon);
-                MeshView mv = Utils.AddQuadrilateral(topRight, bottomRight, bottomLeft, topLeft, material, id);
+                String id = lat + "|" + lon;
+                MeshView mv = Utils.AddQuadrilateral(topRight, bottomRight, bottomLeft, topLeft, material, "q|" + id);
                 mv.setOnMouseClicked(e->{
                     PickResult pr = e.getPickResult();
                     latLonLbl.setText(cursorToCoords(pr));
@@ -257,9 +270,24 @@ public class Controller implements Initializable {
                 Cylinder cylinder = Utils.createLine(new Point3D(0, 0, 0),
                         getCoordTo3dCoord(lat, lon, 1f));
                 cylinder.setMaterial(material);
-                cylinder.setId(id);
+                cylinder.setId("c|" + id);
 
                 histo.getChildren().addAll(cylinder);
+
+                float width = 0.8f;
+
+                Point3D topLeft2 = getCoordTo3dCoord(lat + width, lon - width, 1.01f);
+                Point3D topRight2 = getCoordTo3dCoord(lat + width, lon + width, 1.01f);
+                Point3D bottomLeft2 = getCoordTo3dCoord(lat - width, lon - width, 1.01f);
+                Point3D bottomRight2 = getCoordTo3dCoord(lat - width, lon + width, 1.01f);
+
+                MeshView mv2 = Utils.AddQuadrilateral(topRight2, bottomRight2, bottomLeft2, topLeft2, material, "q|" + id);
+                mv.setOnMouseClicked(e->{
+                    PickResult pr = e.getPickResult();
+                    latLonLbl.setText(cursorToCoords(pr));
+                });
+
+                histo.getChildren().add(mv2);
             }
         }
     }
