@@ -1,4 +1,4 @@
-package fr.polytech.Model;
+package fr.polytech.data.model;
 
 public class EarthPosition {
     private double lat, lon;

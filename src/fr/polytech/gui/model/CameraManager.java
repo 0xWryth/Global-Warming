@@ -1,8 +1,7 @@
-package fr.polytech.Model;
+package fr.polytech.gui.model;
 
 import javafx.event.EventHandler;
 import javafx.scene.*;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.transform.Rotate;

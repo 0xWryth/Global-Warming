@@ -1,4 +1,4 @@
-package fr.polytech.Model;
+package fr.polytech.data.model;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

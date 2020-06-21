@@ -1,11 +1,11 @@
-package fr.polytech.Controller;
+package fr.polytech.gui.controller;
 
-import com.sun.javaws.IconUtil;
-import fr.polytech.Model.*;
+import fr.polytech.gui.model.*;
+import fr.polytech.data.model.AppData;
+import fr.polytech.data.model.DataCreator;
+import fr.polytech.data.model.EarthPosition;
 import javafx.animation.AnimationTimer;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
-
-import static fr.polytech.Model.Utils.*;
 
 public class Controller implements Initializable {
     @FXML
@@ -89,7 +87,7 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        appData = DataCreator.readFile("C:\\Users\\Lucas\\Documents\\MyDango\\PROJET-IHM-LucasBriatte\\src\\fr\\polytech\\Assets\\tempanomaly_4x4grid.csv");
+        appData = DataCreator.readFile("src/fr/polytech/data/assets/tempanomaly_4x4grid.csv");
 
         changingLblText();
         earthPane.setStyle("-fx-background-color: radial-gradient(focus-angle 45deg, focus-distance 5%, center 50% 50%, radius 100%, reflect, white 10%, white 15%, rgb(85, 124, 168) 60%, rgb(29,37,83) 80%)");
@@ -204,7 +202,7 @@ public class Controller implements Initializable {
 
                 PhongMaterial material = histoColor.get(closeTo);
 
-                double height = roundXNumber((1f + anomaly.floatValue() / 12), 2);
+                double height = Utils.roundXNumber((1f + anomaly.floatValue() / 12), 2);
                 if (anomaly < 0) {
                     height = 0;
                 }
@@ -254,21 +252,21 @@ public class Controller implements Initializable {
             for (int lon = -178; lon <= 178; lon = lon + 4) {
                 PhongMaterial material = quadriColor.get(0);
 
-                Point3D topLeft = getCoordTo3dCoord(lat + 4, lon, 1.01f);
-                Point3D topRight = getCoordTo3dCoord(lat + 4, lon + 4, 1.01f);
-                Point3D bottomLeft = getCoordTo3dCoord(lat, lon, 1.01f);
-                Point3D bottomRight = getCoordTo3dCoord(lat, lon + 4, 1.01f);
+                Point3D topLeft = Utils.getCoordTo3dCoord(lat + 4, lon, 1.01f);
+                Point3D topRight = Utils.getCoordTo3dCoord(lat + 4, lon + 4, 1.01f);
+                Point3D bottomLeft = Utils.getCoordTo3dCoord(lat, lon, 1.01f);
+                Point3D bottomRight = Utils.getCoordTo3dCoord(lat, lon + 4, 1.01f);
 
                 String id = lat + "|" + lon;
                 MeshView mv = Utils.AddQuadrilateral(topRight, bottomRight, bottomLeft, topLeft, material, "q|" + id);
                 mv.setOnMouseClicked(e->{
                     PickResult pr = e.getPickResult();
-                    latLonLbl.setText(cursorToCoords(pr));
+                    latLonLbl.setText(Utils.cursorToCoords(pr));
                 });
                 quadrilataire.getChildren().add(mv);
 
                 Cylinder cylinder = Utils.createLine(new Point3D(0, 0, 0),
-                        getCoordTo3dCoord(lat, lon, 1f));
+                        Utils.getCoordTo3dCoord(lat, lon, 1f));
                 cylinder.setMaterial(material);
                 cylinder.setId("c|" + id);
 
@@ -276,15 +274,15 @@ public class Controller implements Initializable {
 
                 float width = 0.8f;
 
-                Point3D topLeft2 = getCoordTo3dCoord(lat + width, lon - width, 1.01f);
-                Point3D topRight2 = getCoordTo3dCoord(lat + width, lon + width, 1.01f);
-                Point3D bottomLeft2 = getCoordTo3dCoord(lat - width, lon - width, 1.01f);
-                Point3D bottomRight2 = getCoordTo3dCoord(lat - width, lon + width, 1.01f);
+                Point3D topLeft2 = Utils.getCoordTo3dCoord(lat + width, lon - width, 1.01f);
+                Point3D topRight2 = Utils.getCoordTo3dCoord(lat + width, lon + width, 1.01f);
+                Point3D bottomLeft2 = Utils.getCoordTo3dCoord(lat - width, lon - width, 1.01f);
+                Point3D bottomRight2 = Utils.getCoordTo3dCoord(lat - width, lon + width, 1.01f);
 
                 MeshView mv2 = Utils.AddQuadrilateral(topRight2, bottomRight2, bottomLeft2, topLeft2, material, "q|" + id);
                 mv.setOnMouseClicked(e->{
                     PickResult pr = e.getPickResult();
-                    latLonLbl.setText(cursorToCoords(pr));
+                    latLonLbl.setText(Utils.cursorToCoords(pr));
                 });
 
                 histo.getChildren().add(mv2);
@@ -309,7 +307,7 @@ public class Controller implements Initializable {
         earthSvg = Utils.loadingEarthModel(true);
         earthSvg.setOnMouseClicked(e->{
             PickResult pr = e.getPickResult();
-            latLonLbl.setText(cursorToCoords(pr));
+            latLonLbl.setText(Utils.cursorToCoords(pr));
         });
     }
 

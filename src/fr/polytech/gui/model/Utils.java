@@ -1,4 +1,4 @@
-package fr.polytech.Model;
+package fr.polytech.gui.model;
 
 import com.interactivemesh.jfx.importer.ImportException;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;

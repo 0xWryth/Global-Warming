@@ -15,11 +15,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox fx:id="leftPane" prefHeight="740.0" prefWidth="685.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.polytech.Controller.Controller">
+<VBox fx:id="leftPane" prefHeight="740.0" prefWidth="685.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.polytech.gui.controller.Controller">
    <children>
       <Pane fx:id="floattingPane">
          <children>
-            <Pane id="earthPane" fx:id="earthPane" prefHeight="670.0" prefWidth="685.0" style="-fx-background-color: lightGrey;" stylesheets="@EarthPane.css">
+            <Pane id="earthPane" fx:id="earthPane" prefHeight="670.0" prefWidth="685.0" style="-fx-background-color: lightGrey;" stylesheets="@../assets/style/EarthPane.css">
                <children>
                   <Text layoutY="331.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: 200;" text="Chargement..." textAlignment="CENTER" wrappingWidth="685.0">
                      <font>
@@ -28,7 +28,7 @@
                   </Text>
                </children>
             </Pane>
-            <Button fx:id="changeModelBtn" alignment="BOTTOM_LEFT" contentDisplay="TOP" layoutX="10.0" layoutY="610.0" mnemonicParsing="false" onAction="#changeEarthModel" style="-fx-background-insets: 0; -fx-border-image-insets: 0; -fx-border-insets: 0; -fx-opaque-insets: 0; -fx-padding: 0; -fx-border-color: white; -fx-border-width: 0; -fx-border-radius: 2; -fx-background-radius: 2;" stylesheets="@Button.css">
+            <Button fx:id="changeModelBtn" alignment="BOTTOM_LEFT" contentDisplay="TOP" layoutX="10.0" layoutY="610.0" mnemonicParsing="false" onAction="#changeEarthModel" style="-fx-background-insets: 0; -fx-border-image-insets: 0; -fx-border-insets: 0; -fx-opaque-insets: 0; -fx-padding: 0; -fx-border-color: white; -fx-border-width: 0; -fx-border-radius: 2; -fx-background-radius: 2;" stylesheets="@../assets/style/Button.css">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -41,7 +41,7 @@
                   </Pane>
                </graphic>
             </Button>
-            <Button fx:id="resetCameraBtn" layoutX="630.0" layoutY="635.0" mnemonicParsing="false" onAction="#resetCamera" stylesheets="@Button.css" text="Reset">
+            <Button fx:id="resetCameraBtn" layoutX="630.0" layoutY="635.0" mnemonicParsing="false" onAction="#resetCamera" stylesheets="@../assets/style/Button.css" text="Reset">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -64,7 +64,7 @@
                <children>
                   <Pane layoutX="4.0" layoutY="4.0" prefHeight="52.0" prefWidth="72.0" style="-fx-background-color: lightGray;" />
                   <Label fx:id="latLonLbl" layoutX="86.0" layoutY="6.0" text="44.0, 0" />
-                  <Button id="graphicButton" fx:id="graphicBtn" layoutX="86.0" layoutY="22.0" mnemonicParsing="false" onAction="#showGraph" stylesheets="@Button.css" text="Graphique" />
+                  <Button id="graphicButton" fx:id="graphicBtn" layoutX="86.0" layoutY="22.0" mnemonicParsing="false" onAction="#showGraph" stylesheets="@../assets/style/Button.css" text="Graphique" />
                </children>
             </Pane>
             <Pane fx:id="graphPane" onMouseClicked="#closeGraphPane" prefHeight="670.0" prefWidth="685.0" style="-fx-background-color: rgba(0, 0, 0, 0.75);" visible="false">
@@ -82,14 +82,14 @@
          </Pane>
       <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="70.0" prefWidth="685.0">
          <children>
-            <Button id="leftGroupBtn" fx:id="switchBtn11" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" stylesheets="@Button.css" textAlignment="CENTER">
+            <Button id="leftGroupBtn" fx:id="switchBtn11" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" stylesheets="@../assets/style/Button.css" textAlignment="CENTER">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../Assets/refresh.png" />
+                        <Image url="@../assets/icons/refresh.png" />
                      </image>
                   </ImageView>
                </graphic>
@@ -97,7 +97,7 @@
                   <Insets left="20.0" />
                </HBox.margin>
             </Button>
-            <Button id="rightGroupBtn" fx:id="playBtn" mnemonicParsing="false" onAction="#playAnimation" prefHeight="36.0" prefWidth="36.0" stylesheets="@Button.css" textAlignment="CENTER">
+            <Button id="rightGroupBtn" fx:id="playBtn" mnemonicParsing="false" onAction="#playAnimation" prefHeight="36.0" prefWidth="36.0" stylesheets="@../assets/style/Button.css" textAlignment="CENTER">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -107,12 +107,12 @@
                <graphic>
                   <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../Assets/play.png" />
+                        <Image url="@../assets/icons/play.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Slider fx:id="yearSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2020.0" min="1880.0" minorTickCount="1" onMouseDragged="#changeYear" prefHeight="14.0" prefWidth="500.0" snapToTicks="true" stylesheets="@Slider.css" value="2020.0" />
+            <Slider fx:id="yearSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2020.0" min="1880.0" minorTickCount="1" onMouseDragged="#changeYear" prefHeight="14.0" prefWidth="500.0" snapToTicks="true" stylesheets="@../assets/style/Slider.css"  value="2020.0" />
             <Label fx:id="yearIndicatorLbl" prefWidth="60.0">
                <padding>
                   <Insets left="10.0" />

@@ -1,6 +1,4 @@
-package fr.polytech.Model;
-
-import javafx.util.Pair;
+package fr.polytech.data.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,14 +13,6 @@ public class AppData {
         this.data = data;
         this.minDif = minDif;
         this.maxDif = maxDif;
-    }
-
-    public Pair<Integer, Integer> getMinMaxAnomalyTemperature() {
-        return null;
-    }
-
-    public Set<EarthPosition> getAreaList() {
-        return null;
     }
 
     public Double getAnomalyFromYearAndArea(Integer year, EarthPosition area) {

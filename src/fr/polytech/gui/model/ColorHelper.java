@@ -1,4 +1,4 @@
-package fr.polytech.Model;
+package fr.polytech.gui.model;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
