@@ -23,3 +23,9 @@
     -fx-padding: 0 !important;
     -fx-label-padding: 0 !important;
 }
+
+#middleGroupBtn {
+    -fx-background-radius: 0 !important;
+    -fx-border-color: transparent rgba(0, 0, 0, 0.2) transparent transparent;
+    -fx-min-width: 40px;
+}

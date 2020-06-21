@@ -82,20 +82,25 @@
          </Pane>
       <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" prefHeight="70.0" prefWidth="685.0">
          <children>
-            <Button id="leftGroupBtn" fx:id="switchBtn11" mnemonicParsing="false" prefHeight="36.0" prefWidth="36.0" stylesheets="@../assets/style/Button.css" textAlignment="CENTER">
+            <Button id="leftGroupBtn" fx:id="loopBtn" mnemonicParsing="false" onAction="#setLoop" prefHeight="36.0" prefWidth="36.0" stylesheets="@../assets/style/Button.css" textAlignment="CENTER">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
                <graphic>
-                  <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="loopIcon" fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../assets/icons/refresh.png" />
+                        <Image url="@../assets/icons/no-loop.png" />
                      </image>
                   </ImageView>
                </graphic>
                <HBox.margin>
                   <Insets left="20.0" />
                </HBox.margin>
+            </Button>
+            <Button id="middleGroupBtn" fx:id="speedBtn" mnemonicParsing="false" onAction="#setSpeed" prefHeight="36.0" prefWidth="36.0" stylesheets="@../assets/style/Button.css" text="1" textAlignment="CENTER" textFill="WHITE">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
             </Button>
             <Button id="rightGroupBtn" fx:id="playBtn" mnemonicParsing="false" onAction="#playAnimation" prefHeight="36.0" prefWidth="36.0" stylesheets="@../assets/style/Button.css" textAlignment="CENTER">
                <opaqueInsets>
@@ -105,14 +110,14 @@
                   <Insets right="20.0" />
                </HBox.margin>
                <graphic>
-                  <ImageView fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="playIcon" fitHeight="10.0" fitWidth="10.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../assets/icons/play.png" />
                      </image>
                   </ImageView>
                </graphic>
             </Button>
-            <Slider fx:id="yearSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2020.0" min="1880.0" minorTickCount="1" onMouseDragged="#changeYear" prefHeight="14.0" prefWidth="500.0" snapToTicks="true" stylesheets="@../assets/style/Slider.css"  value="2020.0" />
+            <Slider fx:id="yearSlider" blockIncrement="1.0" majorTickUnit="1.0" max="2020.0" min="1880.0" minorTickCount="1" onMouseDragged="#changeYear" prefHeight="14.0" prefWidth="500.0" snapToTicks="true" stylesheets="@../assets/style/Slider.css" value="2020.0" />
             <Label fx:id="yearIndicatorLbl" prefWidth="60.0">
                <padding>
                   <Insets left="10.0" />

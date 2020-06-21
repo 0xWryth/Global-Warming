@@ -15,6 +15,8 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
 import javafx.scene.layout.Pane;
@@ -23,6 +25,8 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Pair;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,6 +64,15 @@ public class Controller implements Initializable {
     @FXML
     Pane graphPane;
 
+    @FXML
+    ImageView playIcon;
+
+    @FXML
+    ImageView loopIcon;
+
+    @FXML
+    Button speedBtn;
+
     private Boolean inverted;
 
     private CameraManager cameraManager;
@@ -78,8 +91,8 @@ public class Controller implements Initializable {
     private ArrayList<PhongMaterial> histoColor;
 
     private boolean playingAnimation = false;
-
     private float animationSpeed = 1.0f;
+    private boolean isLooping = false;
 
     private AnimationTimer animation;
 
@@ -152,13 +165,20 @@ public class Controller implements Initializable {
 
             @Override
             public void handle(long now) {
-                if (now - startNanoTime >= 1e9 / 4) {
+                if (now - startNanoTime >= (1e9 / 4) / animationSpeed) {
                     startNanoTime = System.nanoTime();
                     yearSlider.setValue(sliderYear + 1);
                     int maxYear = appData.getYearList().stream().mapToInt(v -> v)
                             .max().orElseThrow(NoSuchElementException::new);
-                    if (sliderYear >= maxYear) {
-                        playAnimation();
+                    if (sliderYear >= maxYear && !isLooping) {
+                        try {
+                            playAnimation();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    else if (sliderYear >= maxYear && isLooping) {
+                        yearSlider.setValue(1880);
                     }
                     changeYear();
                 }
@@ -386,14 +406,16 @@ public class Controller implements Initializable {
         showHisto(sliderYear);
     }
 
-    public void playAnimation() {
+    public void playAnimation() throws FileNotFoundException {
         playingAnimation = !playingAnimation;
         yearSlider.setDisable(playingAnimation);
 
         if (playingAnimation) {
+            playIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/pause.png")));
             animation.start();
         }
         else {
+            playIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/play.png")));
             animation.stop();
         }
     }
@@ -404,5 +426,38 @@ public class Controller implements Initializable {
         if (node instanceof Pane && node.getId().equals("graphPane")) {
             graphPane.setVisible(false);
         }
+    }
+
+    public void setLoop(ActionEvent actionEvent) {
+        isLooping = !isLooping;
+
+        try {
+            if (isLooping) {
+                loopIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/loop.png")));
+            }
+            else {
+                loopIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/no-loop.png")));
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setSpeed(ActionEvent actionEvent) {
+        ArrayList<String> speedArr = new ArrayList<>();
+        speedArr.add("0.5");
+        speedArr.add("1");
+        speedArr.add("2");
+
+        int i = speedArr.indexOf(speedBtn.getText());
+        if (i == speedArr.size() - 1) {
+            i = 0;
+        }
+        else {
+            i++;
+        }
+
+        animationSpeed = Float.parseFloat(speedArr.get(i));
+        speedBtn.setText(speedArr.get(i));
     }
 }

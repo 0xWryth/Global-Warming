@@ -9,8 +9,6 @@ import java.util.HashMap;
 public class DataCreator {
     public static AppData readFile(String filePath) {
         try {
-            final URL url = DataCreator.class.getResource("/fr/polytech/data/assets/tempanomaly_4x4grid.csv");
-
             FileReader file = new FileReader(filePath);
             BufferedReader bufRead = new BufferedReader(file);
 
