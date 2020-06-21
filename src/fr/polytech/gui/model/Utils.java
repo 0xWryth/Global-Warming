@@ -84,7 +84,7 @@ public class Utils {
 
         ObjModelImporter objImporter = new ObjModelImporter();
         try {
-            String URL = svgMap ? "/fr/polytech/Assets/earthSvg.obj" : "/fr/polytech/Assets/earth.obj";
+            String URL = svgMap ? "/fr/polytech/gui/assets/models/earthSvg/earthSvg.obj" : "/fr/polytech/gui/assets/models/earth/earth.obj";
             java.net.URL modeUrl = Utils.class.getResource(URL);
             objImporter.read(modeUrl);
         } catch(ImportException e) {

@@ -1,11 +1,10 @@
 package fr.polytech.Model;
 
-import javafx.util.Pair;
+import fr.polytech.data.model.AppData;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DataCreator {

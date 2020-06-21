@@ -2,9 +2,9 @@ package fr.polytech.Test;
 
 import static org.junit.Assert.*;
 
-import fr.polytech.Model.AppData;
-import fr.polytech.Model.DataCreator;
-import fr.polytech.Model.EarthPosition;
+import fr.polytech.data.model.AppData;
+import fr.polytech.data.model.DataCreator;
+import fr.polytech.data.model.EarthPosition;
 import org.junit.Before;
 import org.junit.Test;
 
