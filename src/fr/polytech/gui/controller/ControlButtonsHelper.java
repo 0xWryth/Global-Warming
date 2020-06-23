@@ -11,6 +11,10 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class ControlButtonsHelper {
+    /**
+     * @param speedBtn
+     * @return
+     */
     public static String setSpeedText(Button speedBtn) {
         ArrayList<String> speedArr = new ArrayList<>();
         speedArr.add("0.5");
@@ -28,6 +32,11 @@ public class ControlButtonsHelper {
         return speedArr.get(i);
     }
 
+    /**
+     * Changing looping icon
+     * @param loopIcon
+     * @param isLooping
+     */
     public static void setLoopIcon(ImageView loopIcon, Boolean isLooping) {
         try {
             if (isLooping) {
@@ -41,6 +50,13 @@ public class ControlButtonsHelper {
         }
     }
 
+    /**
+     * Changing play/pause icon and playing/stopping an animation
+     * @param yearSlider
+     * @param playingAnimation
+     * @param playIcon
+     * @param animation
+     */
     public static void changeAnimation(Slider yearSlider, Boolean playingAnimation, ImageView playIcon, AnimationTimer animation) {
         yearSlider.setDisable(playingAnimation);
 

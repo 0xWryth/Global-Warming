@@ -3,6 +3,11 @@ package fr.polytech.data.model;
 public class EarthPosition {
     private double lat, lon;
 
+    /**
+     * EarthPosition constructor
+     * @param lat - given area latitude
+     * @param lon - given area longitude
+     */
     public EarthPosition(double lat, double lon) {
         testLatLon(lat, lon);
 
@@ -10,6 +15,13 @@ public class EarthPosition {
         this.lon = lon;
     }
 
+    // Helper
+
+    /**
+     * Testing if given latitude and longitude are correct or not
+     * @param lat - given area latitude
+     * @param lon - given area longitude
+     */
     public void testLatLon(double lat, double lon) {
         if (!(lat >= -90.0 && lat <= 90.0 && lon >= -180.0 && lon <= 180.0)) {
             try {
@@ -20,14 +32,9 @@ public class EarthPosition {
         }
     }
 
-    public double getLat() {
-        return lat;
-    }
-
-    public double getLon() {
-        return lon;
-    }
-
+    /**
+     * @return earthPosition with {latitude + "-" + longitude} format
+     */
     @Override
     public String toString() {
         return lat + "-" + lon;

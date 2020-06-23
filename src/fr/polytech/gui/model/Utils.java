@@ -16,6 +16,26 @@ public class Utils {
     private static final float TEXTURE_LAT_OFFSET = -0.2f;
     private static final float TEXTURE_LON_OFFSET = 2.8f;
 
+    // Maths
+
+    /**
+     * @param num - given number to round
+     * @param x - number of decimals
+     * @return rounding a double with x decimals
+     */
+    public static double roundXNumber(double num, int x) {
+        double xPow = Math.pow(10, x);
+        return Math.round(num * xPow) / xPow;
+    }
+
+    // Points helper
+
+    /**
+     * @param lat - given latitude
+     * @param lon - given longitude
+     * @param radius - sphere radius
+     * @return Point3D located at a given (lat,lon) position on a sphere with a given radius
+     */
     public static Point3D getCoordTo3dCoord(float lat, float lon, float radius) {
         float lat_cor = lat + TEXTURE_LAT_OFFSET;
         float lon_cor = lon + TEXTURE_LON_OFFSET;
@@ -27,6 +47,55 @@ public class Utils {
                         * Math.cos(Math.toRadians(lat_cor))*radius);
     }
 
+    /**
+     * @param res - 3D object intersection
+     * @return latitude and longitude string of a clicked point
+     */
+    public static String cursorToCoords(PickResult res)
+    {
+        Point3D coords = res.getIntersectedPoint();
+        double lat = -Math.toDegrees(Math.asin(coords.getY() / Math.sqrt(Math.pow(coords.getX(), 2) + Math.pow(coords.getY(), 2) + Math.pow(coords.getZ(), 2))) );
+        double lon = -Math.toDegrees(Math.atan2(coords.getX(), coords.getZ()));
+
+        return roundXNumber(lat, 4) + ", " + roundXNumber(lon, 4);
+    }
+
+    // Model helper
+
+    /**
+     * @param svgMap - true if the requested model is the svgMap
+     * @return loading the earth model
+     */
+    public static Group loadingEarthModel(Boolean svgMap) {
+        Group group = new Group();
+
+        ObjModelImporter objImporter = new ObjModelImporter();
+        try {
+            String URL = svgMap ? "/fr/polytech/gui/assets/models/earthSvg/earthSvg.obj" : "/fr/polytech/gui/assets/models/earth/earth.obj";
+            java.net.URL modeUrl = Utils.class.getResource(URL);
+            objImporter.read(modeUrl);
+        } catch (ImportException e) {
+            System.out.println(e);
+        }
+
+
+        MeshView[] mv = objImporter.getImport();
+        group.getChildren().addAll(mv);
+
+        return group;
+    }
+
+    // Shape helper
+
+    /**
+     * @param topRight
+     * @param bottomRight
+     * @param bootmLeft
+     * @param topLeft
+     * @param material
+     * @param id
+     * @return a quadrilateral between given points
+     */
     public static MeshView AddQuadrilateral(Point3D topRight, Point3D bottomRight, Point3D bootmLeft,
                                             Point3D topLeft, PhongMaterial material, String id) {
         final TriangleMesh triangleMesh = new TriangleMesh();
@@ -60,6 +129,11 @@ public class Utils {
         return meshView;
     }
 
+    /**
+     * @param origin - origin of the cylinder
+     * @param target - target of the cylinder
+     * @return a cylinder from one point to an other
+     */
     public static Cylinder createLine(Point3D origin, Point3D target) {
         Point3D yAxis = new Point3D(0, 1, 0);
         Point3D diff = target.subtract(origin);
@@ -77,38 +151,5 @@ public class Utils {
         line.getTransforms().addAll(moveToMidpoint, rotateAroundCenter);
 
         return line;
-    }
-
-    public static Group loadingEarthModel(Boolean svgMap) {
-        Group group = new Group();
-
-        ObjModelImporter objImporter = new ObjModelImporter();
-        try {
-            String URL = svgMap ? "/fr/polytech/gui/assets/models/earthSvg/earthSvg.obj" : "/fr/polytech/gui/assets/models/earth/earth.obj";
-            java.net.URL modeUrl = Utils.class.getResource(URL);
-            objImporter.read(modeUrl);
-        } catch(ImportException e) {
-            System.out.println(e);
-        }
-
-
-        MeshView[] mv = objImporter.getImport();
-        group.getChildren().addAll(mv);
-
-        return group;
-    }
-
-    public static double roundXNumber(double num, int x) {
-        double xPow = Math.pow(10, x);
-        return Math.round(num * xPow) / xPow;
-    }
-
-    public static String cursorToCoords(PickResult res)
-    {
-        Point3D coords = res.getIntersectedPoint();
-        double lat = -Math.toDegrees(Math.asin(coords.getY() / Math.sqrt(Math.pow(coords.getX(), 2) + Math.pow(coords.getY(), 2) + Math.pow(coords.getZ(), 2))) );
-        double lon = -Math.toDegrees(Math.atan2(coords.getX(), coords.getZ()));
-
-        return roundXNumber(lat, 4) + ", " + roundXNumber(lon, 4);
     }
 }

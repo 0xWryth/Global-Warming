@@ -6,6 +6,9 @@ import javafx.scene.paint.PhongMaterial;
 import java.util.ArrayList;
 
 public class ColorHelper {
+    /**
+     * @return no data material
+     */
     public static PhongMaterial noDataMaterial() {
         PhongMaterial phongMaterial = new PhongMaterial();
         Color color = new Color(0.5, 0.5, 0.5, 0.01);
@@ -14,6 +17,10 @@ public class ColorHelper {
         return phongMaterial;
     }
 
+    /**
+     * @param colorList list of colors
+     * @return list of phongmaterial from given colors
+     */
     private static ArrayList<PhongMaterial> colorListToPhongArray(Color[] colorList) {
         ArrayList<PhongMaterial> phongMaterials = new ArrayList<>();
         for (Color color : colorList) {
@@ -26,6 +33,10 @@ public class ColorHelper {
         return phongMaterials;
     }
 
+    /**
+     * @param opacity opacity of the color
+     * @return a list of colors
+     */
     public static ArrayList<PhongMaterial> redToBlue(float opacity) {
         Color[] colorList = {
                 new Color(1, 0.28, 0.18, opacity),
@@ -43,6 +54,9 @@ public class ColorHelper {
         return colorListToPhongArray(colorList);
     }
 
+    /**
+     * @return a list of colors
+     */
     public static ArrayList<PhongMaterial> redAndBlue() {
         Color[] colorList = {
                 new Color(1, 0.18, 0.18, 1.0f),

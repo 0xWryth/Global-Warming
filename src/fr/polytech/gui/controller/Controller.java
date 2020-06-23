@@ -126,146 +126,9 @@ public class Controller implements Initializable {
         showLegend(inverted);
     }
 
-    @FXML
-    private void showGraph() {
-        graphPane.setVisible(true);
-        scatterChart.getData().clear();
+    // Initialization helper
 
-        final String latLonStr = latLonLbl.getText();
-        final String[] latLonArr = latLonStr.split(", ");
-        final String latStr = latLonArr[0].split("[.]")[0];
-        final String lonStr = latLonArr[1].split("[.]")[0];
-
-        double lat = Double.parseDouble(latStr);
-        lat = lat - lat % 4;
-        double lon = Double.parseDouble(lonStr);
-        lon = lon - lon % 4 + 2.0;
-
-        ArrayList<Double> anomalies = appData.getAnomaliesFromArea(new EarthPosition(lat, lon));
-
-        XYChart.Series series = new XYChart.Series();
-
-        for (int i = 0; i < anomalies.size(); i++) {
-            if (!anomalies.get(i).isNaN()) {
-                series.getData().add(new XYChart.Data(appData.getMinYear() + i, anomalies.get(i)));
-            }
-        }
-        scatterChart.getData().add(series);
-        scatterChart.setTitle("Anomalies de témpératures de la zone " + lat + ", " + lon + " par an");
-    }
-
-    private void creatingAnimation() {
-        animation = new AnimationTimer() {
-            private long startNanoTime;
-
-            @Override
-            public void start() {
-                startNanoTime = System.nanoTime();
-                super.start();
-            }
-
-            @Override
-            public void handle(long now) {
-                if (now - startNanoTime >= (1e9 / 4) / animationSpeed) {
-                    startNanoTime = System.nanoTime();
-                    yearSlider.setValue(sliderYear + 1);
-                    int maxYear = appData.getYearList().stream().mapToInt(v -> v)
-                            .max().orElseThrow(NoSuchElementException::new);
-                    if (sliderYear >= maxYear && !isLooping) {
-                        playAnimation();
-                    }
-                    else if (sliderYear >= maxYear && isLooping) {
-                        yearSlider.setValue(appData.getMinYear());
-                    }
-                    changeYear();
-                }
-            }
-        };
-    }
-
-    private void showLegend(Boolean inverted) {
-        ArrayList<PhongMaterial> phongMaterials = inverted ? histoColor : quadriColor;
-
-        legendPane.getChildren().forEach((pane) -> {
-            final String idStr = pane.getId();
-            final String[] idArr = idStr.split("_");
-            final String id = idArr[1];
-
-            String color = phongMaterials.get(Integer.parseInt(id) - 1).getSpecularColor().toString();
-            color = color.substring(2, 8);
-            String style = "-fx-background-color: #" + color;
-            pane.setStyle(style);
-        });
-    }
-
-    private void showHisto(int year) {
-        final HashMap<EarthPosition, Double> anomaliesFromYear = appData.getAnomaliesFromYear(year);
-        final double minDif = appData.getMinDif();
-        final double maxDif = appData.getMaxDif();
-
-        histo.getChildren().forEach((cylinder) -> {
-            String[] latlon = cylinder.getId().split("\\|");
-            int lat = Integer.parseInt(latlon[1]);
-            int lon = Integer.parseInt(latlon[2]);
-
-            EarthPosition earthPosition = new EarthPosition(lat, lon);
-            final Double anomaly = anomaliesFromYear.get(earthPosition);
-
-            if (cylinder instanceof Cylinder) {
-                Cylinder cyl = (Cylinder) cylinder;
-
-                final double anomalyColorDouble = (maxDif - anomaly) / maxDif;
-                int closeTo = (int) Math.round(anomalyColorDouble * 4);
-
-                PhongMaterial material = histoColor.get(closeTo);
-
-                double height = Utils.roundXNumber((1f + anomaly.floatValue() / 12), 2);
-                if (anomaly < 0) {
-                    height = 0;
-                }
-                cyl.setHeight(height);
-                cyl.setMaterial(material);
-            } else if (cylinder instanceof MeshView) {
-                MeshView mv = (MeshView) cylinder;
-
-                mv.setVisible(anomaly <= 0);
-
-                final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
-                int closeTo = (int) Math.round(anomalyColorDouble * 5);
-
-                PhongMaterial material = histoColor.get(closeTo + 4);
-                mv.setMaterial(material);
-            }
-        });
-    }
-
-    private void showQuadri(int year) {
-        final HashMap<EarthPosition, Double> anomaliesFromYear = appData.getAnomaliesFromYear(year);
-        final double minDif = appData.getMinDif();
-        final double maxDif = appData.getMaxDif();
-
-        quadrilataire.getChildren().forEach((mv) -> {
-            MeshView m = (MeshView) mv;
-
-            String[] latlon = mv.getId().split("\\|");
-            int lat = Integer.parseInt(latlon[1]);
-            int lon = Integer.parseInt(latlon[2]);
-
-            Double anomaly = anomaliesFromYear.get(new EarthPosition(lat, lon));
-            if (anomaly.isNaN()) {
-                m.setMaterial(noDataColor);
-            }
-            else {
-                final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
-                final int closeTo = (int) Math.round(anomalyColorDouble * 9);
-
-                PhongMaterial material = quadriColor.get(closeTo);
-
-                m.setMaterial(material);
-            }
-        });
-    }
-
+    // Creating quadrilataires and histograms group
     private void creatingQuadriAndHisto() {
         quadrilataire = new Group();
         histo = new Group();
@@ -312,6 +175,238 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * Creating the animation
+     */
+    private void creatingAnimation() {
+        animation = new AnimationTimer() {
+            private long startNanoTime;
+
+            @Override
+            public void start() {
+                startNanoTime = System.nanoTime();
+                super.start();
+            }
+
+            @Override
+            public void handle(long now) {
+                if (now - startNanoTime >= (1e9 / 4) / animationSpeed) {
+                    startNanoTime = System.nanoTime();
+                    yearSlider.setValue(sliderYear + 1);
+                    int maxYear = appData.getYearList().stream().mapToInt(v -> v)
+                            .max().orElseThrow(NoSuchElementException::new);
+                    if (sliderYear >= maxYear && !isLooping) {
+                        playAnimation();
+                    }
+                    else if (sliderYear >= maxYear && isLooping) {
+                        yearSlider.setValue(appData.getMinYear());
+                    }
+                    changeYear();
+                }
+            }
+        };
+    }
+
+    /**
+     * Initialization of the earth model
+     */
+    private void loadingEarth() {
+        earth = Utils.loadingEarthModel(false);
+    }
+
+    /**
+     * Initialization of the earth SVG model
+     */
+    private void loadingSvgEarth() {
+        earthSvg = Utils.loadingEarthModel(true);
+        earthSvg.setOnMouseClicked(e->{
+            PickResult pr = e.getPickResult();
+            latLonLbl.setText(Utils.cursorToCoords(pr));
+        });
+    }
+
+    /**
+     * Closing graph menu
+     * @param mouseEvent
+     */
+    public void closeGraphPane(MouseEvent mouseEvent) {
+        PickResult pr = mouseEvent.getPickResult();
+        Node node = pr.getIntersectedNode();
+        if (node instanceof Pane && node.getId().equals("graphPane")) {
+            graphPane.setVisible(false);
+        }
+    }
+
+    /**
+     * Toggling loop value
+     * @param actionEvent
+     */
+    public void setLoop(ActionEvent actionEvent) {
+        isLooping = !isLooping;
+
+        ControlButtonsHelper.setLoopIcon(loopIcon, isLooping);
+    }
+
+    /**
+     * Toggling speed value
+     * @param actionEvent
+     */
+    public void setSpeed(ActionEvent actionEvent) {
+        String speed = ControlButtonsHelper.setSpeedText(this.speedBtn);
+
+        animationSpeed = Float.parseFloat(speed);
+        speedBtn.setText(speed);
+    }
+
+    // Button handler
+
+    /**
+     * Showing a graph for a given year and position
+     */
+    @FXML
+    private void showGraph() {
+        graphPane.setVisible(true);
+        scatterChart.getData().clear();
+
+        final String latLonStr = latLonLbl.getText();
+        final String[] latLonArr = latLonStr.split(", ");
+        final String latStr = latLonArr[0].split("[.]")[0];
+        final String lonStr = latLonArr[1].split("[.]")[0];
+
+        double lat = Double.parseDouble(latStr);
+        lat = lat - lat % 4;
+        double lon = Double.parseDouble(lonStr);
+        lon = lon - lon % 4 + 2.0;
+
+        ArrayList<Double> anomalies = appData.getAnomaliesFromArea(new EarthPosition(lat, lon));
+
+        XYChart.Series series = new XYChart.Series();
+
+        for (int i = 0; i < anomalies.size(); i++) {
+            if (!anomalies.get(i).isNaN()) {
+                series.getData().add(new XYChart.Data(appData.getMinYear() + i, anomalies.get(i)));
+            }
+        }
+        scatterChart.getData().add(series);
+        scatterChart.setTitle("Anomalies de témpératures de la zone " + lat + ", " + lon + " par an");
+    }
+
+    /**
+     * Switching view mode
+     * @param actionEvent
+     */
+    public void changeEarthModel(ActionEvent actionEvent) {
+        System.gc();
+
+        inverted = !inverted;
+        Pair<Rotate, Rotate> p = cameraManager.getRotate();
+        displayingEarth(inverted);
+        cameraManager.setRotate(p);
+        showLegend(inverted);
+
+        System.gc();
+    }
+
+    // Display function
+
+    /**
+     * Showing the legend
+     * @param inverted
+     */
+    private void showLegend(Boolean inverted) {
+        ArrayList<PhongMaterial> phongMaterials = inverted ? histoColor : quadriColor;
+
+        legendPane.getChildren().forEach((pane) -> {
+            final String idStr = pane.getId();
+            final String[] idArr = idStr.split("_");
+            final String id = idArr[1];
+
+            String color = phongMaterials.get(Integer.parseInt(id) - 1).getSpecularColor().toString();
+            color = color.substring(2, 8);
+            String style = "-fx-background-color: #" + color;
+            pane.setStyle(style);
+        });
+    }
+
+    /**
+     * Showing histograms of a given year
+     * @param year - given year
+     */
+    private void showHisto(int year) {
+        final HashMap<EarthPosition, Double> anomaliesFromYear = appData.getAnomaliesFromYear(year);
+        final double minDif = appData.getMinDif();
+        final double maxDif = appData.getMaxDif();
+
+        histo.getChildren().forEach((cylinder) -> {
+            String[] latlon = cylinder.getId().split("\\|");
+            int lat = Integer.parseInt(latlon[1]);
+            int lon = Integer.parseInt(latlon[2]);
+
+            EarthPosition earthPosition = new EarthPosition(lat, lon);
+            final Double anomaly = anomaliesFromYear.get(earthPosition);
+
+            if (cylinder instanceof Cylinder) {
+                Cylinder cyl = (Cylinder) cylinder;
+
+                final double anomalyColorDouble = (maxDif - anomaly) / maxDif;
+                int closeTo = (int) Math.round(anomalyColorDouble * 4);
+
+                PhongMaterial material = histoColor.get(closeTo);
+
+                double height = Utils.roundXNumber((1f + anomaly.floatValue() / 12), 2);
+                if (anomaly < 0) {
+                    height = 0;
+                }
+                cyl.setHeight(height);
+                cyl.setMaterial(material);
+            } else if (cylinder instanceof MeshView) {
+                MeshView mv = (MeshView) cylinder;
+
+                mv.setVisible(anomaly <= 0);
+
+                final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
+                int closeTo = (int) Math.round(anomalyColorDouble * 5);
+
+                PhongMaterial material = histoColor.get(closeTo + 4);
+                mv.setMaterial(material);
+            }
+        });
+    }
+
+    /**
+     * Showing quadrilataires of a given year
+     * @param year - given year
+     */
+    private void showQuadri(int year) {
+        final HashMap<EarthPosition, Double> anomaliesFromYear = appData.getAnomaliesFromYear(year);
+        final double minDif = appData.getMinDif();
+        final double maxDif = appData.getMaxDif();
+
+        quadrilataire.getChildren().forEach((mv) -> {
+            MeshView m = (MeshView) mv;
+
+            String[] latlon = mv.getId().split("\\|");
+            int lat = Integer.parseInt(latlon[1]);
+            int lon = Integer.parseInt(latlon[2]);
+
+            Double anomaly = anomaliesFromYear.get(new EarthPosition(lat, lon));
+            if (anomaly.isNaN()) {
+                m.setMaterial(noDataColor);
+            }
+            else {
+                final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
+                final int closeTo = (int) Math.round(anomalyColorDouble * 9);
+
+                PhongMaterial material = quadriColor.get(closeTo);
+
+                m.setMaterial(material);
+            }
+        });
+    }
+
+    /**
+     * Formating slider text value
+     */
     private void changingLblText() {
         yearIndicatorLbl.textProperty().bind(
                 Bindings.format(
@@ -321,18 +416,10 @@ public class Controller implements Initializable {
         );
     }
 
-    private void loadingEarth() {
-        earth = Utils.loadingEarthModel(false);
-    }
-
-    private void loadingSvgEarth() {
-        earthSvg = Utils.loadingEarthModel(true);
-        earthSvg.setOnMouseClicked(e->{
-            PickResult pr = e.getPickResult();
-            latLonLbl.setText(Utils.cursorToCoords(pr));
-        });
-    }
-
+    /**
+     * Displaying the earth
+     * @param invertMode
+     */
     private void displayingEarth(Boolean invertMode) {
         Group g1 = invertMode ? earthSvg : earth;
         Group g2 = invertMode ? earth : earthSvg;
@@ -386,52 +473,35 @@ public class Controller implements Initializable {
         previewPane.getChildren().addAll(subScene2);
     }
 
+    // Camera handler
+
+    /**
+     * Reseting camera
+     * @param actionEvent
+     */
     public void resetCamera(ActionEvent actionEvent) {
         cameraManager.resetCamera();
     }
 
-    public void changeEarthModel(ActionEvent actionEvent) {
-        System.gc();
+    // Slider handler
 
-        inverted = !inverted;
-        Pair<Rotate, Rotate> p = cameraManager.getRotate();
-        displayingEarth(inverted);
-        cameraManager.setRotate(p);
-        showLegend(inverted);
-
-        System.gc();
-    }
-
+    /**
+     * Changing slider year
+     */
     public void changeYear() {
         sliderYear = (int) yearSlider.getValue();
         showQuadri(sliderYear);
         showHisto(sliderYear);
     }
 
+    // Animation handler
+
+    /**
+     * Toggling animation mode
+     */
     public void playAnimation() {
         playingAnimation = !playingAnimation;
 
         ControlButtonsHelper.changeAnimation(yearSlider, playingAnimation, playIcon, animation);
-    }
-
-    public void closeGraphPane(MouseEvent mouseEvent) {
-        PickResult pr = mouseEvent.getPickResult();
-        Node node = pr.getIntersectedNode();
-        if (node instanceof Pane && node.getId().equals("graphPane")) {
-            graphPane.setVisible(false);
-        }
-    }
-
-    public void setLoop(ActionEvent actionEvent) {
-        isLooping = !isLooping;
-
-        ControlButtonsHelper.setLoopIcon(loopIcon, isLooping);
-    }
-
-    public void setSpeed(ActionEvent actionEvent) {
-        String speed = ControlButtonsHelper.setSpeedText(this.speedBtn);
-
-        animationSpeed = Float.parseFloat(speed);
-        speedBtn.setText(speed);
     }
 }
