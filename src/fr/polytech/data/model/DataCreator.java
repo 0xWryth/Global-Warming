@@ -1,16 +1,16 @@
 package fr.polytech.data.model;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.util.HashMap;
 
 public class DataCreator {
     public static AppData readFile(String filePath) {
         try {
-            FileReader file = new FileReader(filePath);
-            BufferedReader bufRead = new BufferedReader(file);
+            URL res = DataCreator.class.getResource(filePath);
+
+            BufferedReader bufRead = new BufferedReader(
+                    new InputStreamReader(res.openStream()));
 
             String line = bufRead.readLine();
             if (line != null) {
@@ -19,6 +19,8 @@ public class DataCreator {
 
             Integer minYear = null;
             HashMap<Integer, YearData> data = new HashMap<>();
+
+            Integer maxYear = null;
 
             Double minDif = null;
             Double maxDif = null;
@@ -36,6 +38,8 @@ public class DataCreator {
                         YearData yearData = new YearData();
                         data.put(Integer.parseInt(array[i]), yearData);
                     }
+
+                    maxYear = Integer.parseInt(array[array.length - 1]);
                 }
                 else {
                     EarthPosition earthPosition = new EarthPosition(Double.parseDouble(array[0]), Double.parseDouble(array[1]));
@@ -69,9 +73,8 @@ public class DataCreator {
             }
 
             bufRead.close();
-            file.close();
 
-            return new AppData(data, minDif, maxDif);
+            return new AppData(data, minDif, maxDif, minYear, maxYear);
         } catch (IOException e) {
             e.printStackTrace();
         }

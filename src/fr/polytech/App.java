@@ -1,7 +1,5 @@
 package fr.polytech;
 
-import fr.polytech.data.model.AppData;
-import fr.polytech.data.model.DataCreator;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,7 +16,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        System.out.println(primaryStage);
         try {
             // Setting FXML file URL
             final URL url = getClass().getResource("/fr/polytech/gui/view/gui.fxml");
@@ -35,7 +32,7 @@ public class App extends Application {
         } catch (IOException ex) {
             System.err.println("Loading error: " + ex);
         }
-        primaryStage.setTitle("App");
+        primaryStage.setTitle("Visualisation des anomalies de températures");
 
         primaryStage.show();
     }

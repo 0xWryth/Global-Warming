@@ -11,12 +11,13 @@ public class EarthPosition {
     }
 
     public void testLatLon(double lat, double lon) {
-//        try {
-//            throw new BadEarthPositionException("");
-//        }
-//        catch (BadEarthPositionException e) {
-//            System.err.println(e);
-//        }
+        if (!(lat >= -90.0 && lat <= 90.0 && lon >= -180.0 && lon <= 180.0)) {
+            try {
+                throw new BadEarthPositionException("La latitude/longitude " + lat + ", " + lon + " n'est pas correcte");
+            } catch (BadEarthPositionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public double getLat() {

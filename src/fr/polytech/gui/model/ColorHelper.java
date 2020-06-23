@@ -6,6 +6,14 @@ import javafx.scene.paint.PhongMaterial;
 import java.util.ArrayList;
 
 public class ColorHelper {
+    public static PhongMaterial noDataMaterial() {
+        PhongMaterial phongMaterial = new PhongMaterial();
+        Color color = new Color(0.5, 0.5, 0.5, 0.01);
+        phongMaterial.setSpecularColor(color);
+        phongMaterial.setDiffuseColor(color);
+        return phongMaterial;
+    }
+
     private static ArrayList<PhongMaterial> colorListToPhongArray(Color[] colorList) {
         ArrayList<PhongMaterial> phongMaterials = new ArrayList<>();
         for (Color color : colorList) {

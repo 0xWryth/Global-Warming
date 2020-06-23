@@ -15,7 +15,6 @@ import javafx.scene.chart.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
@@ -24,9 +23,6 @@ import javafx.scene.paint.*;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.util.Pair;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +85,7 @@ public class Controller implements Initializable {
 
     private ArrayList<PhongMaterial> quadriColor;
     private ArrayList<PhongMaterial> histoColor;
+    private PhongMaterial noDataColor;
 
     private boolean playingAnimation = false;
     private float animationSpeed = 1.0f;
@@ -96,17 +93,20 @@ public class Controller implements Initializable {
 
     private AnimationTimer animation;
 
-    private int sliderYear = 2020;
+    private int sliderYear;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        appData = DataCreator.readFile("src/fr/polytech/data/assets/tempanomaly_4x4grid.csv");
+        appData = DataCreator.readFile("/fr/polytech/data/assets/tempanomaly_4x4grid.csv");
+
+        sliderYear = appData.getMaxYear();
 
         changingLblText();
         earthPane.setStyle("-fx-background-color: radial-gradient(focus-angle 45deg, focus-distance 5%, center 50% 50%, radius 100%, reflect, white 10%, white 15%, rgb(85, 124, 168) 60%, rgb(29,37,83) 80%)");
 
         quadriColor = ColorHelper.redToBlue(0.001f);
         histoColor = ColorHelper.redAndBlue();
+        noDataColor = ColorHelper.noDataMaterial();
 
         scatterChart.setLegendVisible(false);
 
@@ -147,10 +147,11 @@ public class Controller implements Initializable {
 
         for (int i = 0; i < anomalies.size(); i++) {
             if (!anomalies.get(i).isNaN()) {
-                series.getData().add(new XYChart.Data(1880 + i, anomalies.get(i)));
+                series.getData().add(new XYChart.Data(appData.getMinYear() + i, anomalies.get(i)));
             }
         }
         scatterChart.getData().add(series);
+        scatterChart.setTitle("Anomalies de témpératures de la zone " + lat + ", " + lon + " par an");
     }
 
     private void creatingAnimation() {
@@ -171,14 +172,10 @@ public class Controller implements Initializable {
                     int maxYear = appData.getYearList().stream().mapToInt(v -> v)
                             .max().orElseThrow(NoSuchElementException::new);
                     if (sliderYear >= maxYear && !isLooping) {
-                        try {
-                            playAnimation();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        playAnimation();
                     }
                     else if (sliderYear >= maxYear && isLooping) {
-                        yearSlider.setValue(1880);
+                        yearSlider.setValue(appData.getMinYear());
                     }
                     changeYear();
                 }
@@ -255,12 +252,17 @@ public class Controller implements Initializable {
             int lon = Integer.parseInt(latlon[2]);
 
             Double anomaly = anomaliesFromYear.get(new EarthPosition(lat, lon));
-            final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
-            final int closeTo = (int) Math.round(anomalyColorDouble * 9);
+            if (anomaly.isNaN()) {
+                m.setMaterial(noDataColor);
+            }
+            else {
+                final double anomalyColorDouble = (maxDif - anomaly) / (maxDif - minDif);
+                final int closeTo = (int) Math.round(anomalyColorDouble * 9);
 
-            PhongMaterial material = quadriColor.get(closeTo);
+                PhongMaterial material = quadriColor.get(closeTo);
 
-            m.setMaterial(material);
+                m.setMaterial(material);
+            }
         });
     }
 
@@ -406,18 +408,10 @@ public class Controller implements Initializable {
         showHisto(sliderYear);
     }
 
-    public void playAnimation() throws FileNotFoundException {
+    public void playAnimation() {
         playingAnimation = !playingAnimation;
-        yearSlider.setDisable(playingAnimation);
 
-        if (playingAnimation) {
-            playIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/pause.png")));
-            animation.start();
-        }
-        else {
-            playIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/play.png")));
-            animation.stop();
-        }
+        ControlButtonsHelper.changeAnimation(yearSlider, playingAnimation, playIcon, animation);
     }
 
     public void closeGraphPane(MouseEvent mouseEvent) {
@@ -431,33 +425,13 @@ public class Controller implements Initializable {
     public void setLoop(ActionEvent actionEvent) {
         isLooping = !isLooping;
 
-        try {
-            if (isLooping) {
-                loopIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/loop.png")));
-            }
-            else {
-                loopIcon.setImage(new Image(new FileInputStream("src/fr/polytech/gui/assets/icons/no-loop.png")));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        ControlButtonsHelper.setLoopIcon(loopIcon, isLooping);
     }
 
     public void setSpeed(ActionEvent actionEvent) {
-        ArrayList<String> speedArr = new ArrayList<>();
-        speedArr.add("0.5");
-        speedArr.add("1");
-        speedArr.add("2");
+        String speed = ControlButtonsHelper.setSpeedText(this.speedBtn);
 
-        int i = speedArr.indexOf(speedBtn.getText());
-        if (i == speedArr.size() - 1) {
-            i = 0;
-        }
-        else {
-            i++;
-        }
-
-        animationSpeed = Float.parseFloat(speedArr.get(i));
-        speedBtn.setText(speedArr.get(i));
+        animationSpeed = Float.parseFloat(speed);
+        speedBtn.setText(speed);
     }
 }
